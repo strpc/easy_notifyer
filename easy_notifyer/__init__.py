@@ -1,5 +1,15 @@
-from easy_notifyer.telegram import Telegram, TelegramAsync, telegram_reporter
 from easy_notifyer.mail import Mailer
+from easy_notifyer.telegram import (
+    Telegram,
+    TelegramAsync,
+    telegram_reporter,
+    async_telegram_reporter,
+)
 
-
-__all__ = ["Telegram", "TelegramAsync", "telegram_reporter", "Mailer"]
+__all__ = [
+    "Mailer",
+    "Telegram",
+    "TelegramAsync",
+    "telegram_reporter",
+    "async_telegram_reporter",
+]
