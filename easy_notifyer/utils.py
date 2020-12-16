@@ -1,4 +1,4 @@
-from typing import Tuple, List, Union
+from typing import List, Tuple, Union
 
 from easy_notifyer.env import Env
 

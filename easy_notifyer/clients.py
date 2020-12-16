@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union, IO
+from typing import IO, Any, Dict, Union
 
 from httpx import AsyncClient, Client, Response
 
