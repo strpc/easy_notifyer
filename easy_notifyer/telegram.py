@@ -1,11 +1,13 @@
 import asyncio
 import functools
 import traceback
-from typing import Union, List, Callable, Any, Dict, Optional
+from io import BytesIO
+from typing import IO, Any, Callable, Dict, List, Optional, Union
 
 from easy_notifyer.clients import AsyncRequests, Requests, Response
 from easy_notifyer.env import Env
-from easy_notifyer.utils import make_report, get_telegram_creds
+from easy_notifyer.report import Report
+from easy_notifyer.utils import get_telegram_creds
 
 
 class TelegramBase:
@@ -29,13 +31,15 @@ class TelegramAsync(TelegramBase):
             method_api: str,
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
-            data: Optional[Any] = None
+            data: Optional[Any] = None,
+            files: Optional[Union[IO[str], IO[bytes], str, bytes]] = None
     ) -> Response:
         return await self._client.post(
             url=self._request_url + method_api,
             params=params,
             body=body,
             data=data,
+            files=files,
         )
 
     async def send_message(self, msg: str, **kwargs):
@@ -53,9 +57,38 @@ class TelegramAsync(TelegramBase):
                 body['disable_web_page_preview'] = True
             await self._send_post(method_api=method_api, body=body)
 
-    async def send_report(self, tback: str, func_name: Optional[str] = None):
-        report = await self._run_sync(make_report, tback, func_name)
-        await self.send_message(report)
+    async def send_attach(self, attach: Any, text: Optional[str] = None, **kwargs):
+        method_api = 'sendDocument'
+        chat_ids = [self._chat_id] if isinstance(self._chat_id, int) else self._chat_id
+
+        if isinstance(attach, bytes):
+            file = BytesIO(attach)
+        else:
+            file = BytesIO(attach.encode())
+
+        body = {}
+        if text is not None:
+            body['caption'] = text
+        if kwargs.get('parse_mode'):
+            body['parse_mode'] = kwargs['parse_mode']
+        if kwargs.get('disable_web_page_preview'):
+            body['disable_web_page_preview'] = True
+
+        for chat_id in chat_ids:
+            body['chat_id'] = chat_id
+            await self._send_post()
+
+
+    async def send_report(self, tback: str, **kwargs):
+        func_name = kwargs.get('func_name')
+        header = kwargs.get('header')
+        as_attached = kwargs.get('as_attached')
+        report: Report = await self._run_sync(Report, tback, func_name, header, as_attached)
+
+        if as_attached is not None:
+            await self.send_attach(report.attach, report.report)
+        else:
+            await self.send_message(report.report)
 
     @staticmethod
     async def _run_sync(func: Callable, *args, **kwargs):
@@ -81,12 +114,14 @@ class Telegram(TelegramBase):
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
             data: Optional[Any] = None,
+            files: Optional[Union[IO[str], IO[bytes], str, bytes]] = None
     ) -> Response:
         return self._client.post(
             url=self._request_url + method_api,
             params=params,
             body=body,
             data=data,
+            files=files
         )
 
     def send_message(self, msg: str, **kwargs):
@@ -104,9 +139,18 @@ class Telegram(TelegramBase):
                 body['disable_web_page_preview'] = True
             self._send_post(method_api=method_api, body=body)
 
-    def send_report(self, tback: str, func_name: Optional[str] = None):
-        report = make_report(tback, func_name)
-        self.send_message(report)
+    def send_attach(self, report: Report):
+        pass
+
+    def send_report(self, tback: str, **kwargs):
+        func_name = kwargs.get('func_name')
+        header = kwargs.get('header')
+        as_attached = kwargs.get('as_attached')
+        report = Report(tback, func_name, header, as_attached)
+        if as_attached is not None:
+            self.send_attach(report)
+        else:
+            self.send_message(report.report)
 
 
 def telegram_reporter(
@@ -118,6 +162,8 @@ def telegram_reporter(
     exceptions = params.get('exceptions', Exception)
     if token is None or chat_id is None:
         token, chat_id = get_telegram_creds()
+    as_attached = params.get('as_attached', False)
+    header = params.get('header')
 
     def decorator(func):
         @functools.wraps(func)
@@ -128,7 +174,7 @@ def telegram_reporter(
                 func_name = func.__name__
                 tback = traceback.format_exc()
                 bot = Telegram(token=token, chat_id=chat_id)
-                bot.send_report(tback, func_name)
+                bot.send_report(tback, func_name=func_name, header=header, as_attached=as_attached)
                 raise exc
         return wrapper
     return decorator
@@ -143,6 +189,8 @@ def async_telegram_reporter(
     exceptions = params.get('exceptions', Exception)
     if token is None or chat_id is None:
         token, chat_id = get_telegram_creds()
+    as_attached = params.get('as_attached', False)
+    header = params.get('header')
 
     def decorator(func):
         @functools.wraps(func)
@@ -153,7 +201,7 @@ def async_telegram_reporter(
                 func_name = func.__name__
                 tback = traceback.format_exc()
                 bot = TelegramAsync(token=token, chat_id=chat_id)
-                await bot.send_report(tback, func_name)
+                await bot.send_report(tback, func_name=func_name, header=header, as_attached=as_attached)
                 raise exc
         return wrapper
     return decorator
