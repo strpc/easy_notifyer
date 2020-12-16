@@ -4,7 +4,7 @@ from setuptools import setup
 
 EXTRAS = {
     'telegram': ['httpx'],
-    'dev': ['pytest', 'pylint', 'flake8']
+    'dev': ['pytest', 'pylint', 'flake8', 'isort']
 }
 
 
