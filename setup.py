@@ -14,9 +14,11 @@ setup(
     description='Easy notifyer from python to your messangers',
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
+    install_requires=EXTRAS['telegram'],
     extras_require={
         'telegram': EXTRAS['telegram'],
         'dev': EXTRAS['dev'],
         'all': list(chain.from_iterable(EXTRAS.values())),
     },
+    python_requires='>=3.7, <4',
 )
