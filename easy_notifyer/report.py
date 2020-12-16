@@ -1,0 +1,61 @@
+from socket import gethostname
+from datetime import datetime
+from io import BytesIO
+from typing import Optional
+
+from easy_notifyer.env import Env
+
+
+class Report:
+    def __init__(
+            self,
+            tback: str,
+            func_name: Optional[str] = None,
+            header: Optional[str] = None,
+            as_attached: Optional[bool] = None
+    ):
+        self._tback = tback
+        self._func_name = func_name
+        self._header = header
+        self._host_name = gethostname()
+        self._project_name = Env.EASY_NOTIFYER_PROJECT_NAME
+        self._as_attached = as_attached
+        self.report = None
+        self.attach = None
+        if self._as_attached is not None:
+            self._make_attach_report()
+        else:
+            self._make_text_report()
+
+    def _make_text_report(self):
+        crash_time = datetime.now().replace(microsecond=0)
+        report = [
+            "Your program has crashed ☠️",
+            'Machine name: %s' % self._host_name,
+            'Crash date: %s' % crash_time.strftime(Env.EASY_NOTIFYER_DATE_FORMAT),
+            "Traceback:",
+            '%s' % self._tback
+        ]
+        if self._header is not None:
+            report.insert(0, '%s' % self._header)
+        if self._project_name is not None:
+            report.insert(1, 'Project: %s' % self._project_name)
+        if self._func_name is not None:
+            report.insert(3, 'Main call: %s' % self._func_name)
+        self.report = '\n'.join(report)
+
+    def _make_attach_report(self):
+        crash_time = datetime.now().replace(microsecond=0)
+        report = [
+            "Your program has crashed ☠️",
+            'Machine name: %s' % self._host_name,
+            'Crash date: %s' % crash_time.strftime(Env.EASY_NOTIFYER_DATE_FORMAT)
+        ]
+        if self._header is not None:
+            report.insert(0, '%s' % self._header)
+        if self._project_name is not None:
+            report.insert(1, 'Project: %s' % self._project_name)
+        if self._func_name is not None:
+            report.insert(2, 'Main call: %s' % self._func_name)
+        self.report = '\n'.join(report)
+        self.attach = BytesIO(self._tback.encode())

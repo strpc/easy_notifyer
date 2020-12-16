@@ -1,26 +1,6 @@
-from datetime import datetime
-from socket import gethostname
-from typing import Tuple, Optional, List, Union
+from typing import Tuple, List, Union
 
 from easy_notifyer.env import Env
-
-
-def make_report(tback: str, func_name: Optional[str] = None) -> str:
-    crash_time = datetime.now().replace(microsecond=0)
-    host_name = gethostname()
-    report = [
-        "Your program has crashed ☠️",
-        'Machine name: %s' % host_name,
-        'Crash date: %s' % crash_time.strftime(Env.EASY_NOTIFYER_DATE_FORMAT),
-        "Traceback:",
-        '%s' % tback
-    ]
-    if Env.EASY_NOTIFYER_PROJECT_NAME is not None:
-        report.insert(1, 'Project: %s' % Env.EASY_NOTIFYER_PROJECT_NAME)
-    if func_name is not None:
-        report.insert(3, 'Main call: %s' % func_name)
-    text = '\n'.join(report)
-    return text
 
 
 def get_telegram_creds() -> Union[Tuple[str, int], Tuple[str, List[int]]]:
