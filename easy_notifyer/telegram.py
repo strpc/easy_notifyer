@@ -112,7 +112,7 @@ class Telegram(TelegramBase):
 def telegram_reporter(
         *,
         token: Optional[str] = None,
-        chat_id: Optional[int] = None,
+        chat_id: Optional[Union[List[int], int]] = None,
         **params
 ):
     exceptions = params.get('exceptions', Exception)
@@ -137,7 +137,7 @@ def telegram_reporter(
 def async_telegram_reporter(
         *,
         token: Optional[str] = None,
-        chat_id: Optional[int] = None,
+        chat_id: Optional[Union[List[int], int]] = None,
         **params
 ):
     exceptions = params.get('exceptions', Exception)
