@@ -1,6 +1,5 @@
-from socket import gethostname
 from datetime import datetime
-from io import BytesIO
+from socket import gethostname
 from typing import Optional
 
 from easy_notifyer.env import Env
@@ -58,4 +57,4 @@ class Report:
         if self._func_name is not None:
             report.insert(2, 'Main call: %s' % self._func_name)
         self.report = '\n'.join(report)
-        self.attach = BytesIO(self._tback.encode())
+        self.attach = self._tback
