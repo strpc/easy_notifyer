@@ -1,4 +1,4 @@
-from typing import IO, Any, Dict, Union
+from typing import Dict, Optional
 
 from httpx import AsyncClient, Client, Response
 
@@ -11,10 +11,10 @@ class AsyncRequests:
             self,
             *,
             url: str,
-            params: Dict,
-            body: Dict,
-            data: Any,
-            files: Union[IO[str], IO[bytes], str, bytes],
+            params: Optional[Dict] = None,
+            body: Optional[Dict] = None,
+            data: Optional[Dict] = None,
+            files: Optional[Dict] = None,
     ) -> Response:
         async with self._client as client:
             return await client.post(url=url, params=params, json=body, data=data, files=files)
@@ -28,9 +28,9 @@ class Requests:
             self,
             *,
             url: str,
-            params: Dict,
-            body: Dict,
-            data: Any,
-            files: Union[IO[str], IO[bytes], str, bytes],
+            params: Optional[Dict] = None,
+            body: Optional[Dict] = None,
+            data: Optional[Dict] = None,
+            files: Optional[Dict] = None,
     ) -> Response:
         return self._client.post(url=url, params=params, json=body, data=data, files=files)
