@@ -1,4 +1,6 @@
-from typing import List, Tuple, Union
+import asyncio
+import functools
+from typing import Callable, List, Tuple, Union
 
 from easy_notifyer.env import Env
 
@@ -18,3 +20,8 @@ def get_telegram_creds() -> Union[Tuple[str, int], Tuple[str, List[int]]]:
     if len(chat_id) == 1:
         return token, chat_id[0]
     return token, chat_id
+
+
+async def run_sync(func: Callable, *args, **kwargs):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, functools.partial(func, *args, **kwargs))
