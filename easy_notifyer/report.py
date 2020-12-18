@@ -11,7 +11,7 @@ class Report:
             tback: str,
             func_name: Optional[str] = None,
             header: Optional[str] = None,
-            as_attached: Optional[bool] = None
+            as_attached: bool = False,
     ):
         self._tback = tback
         self._func_name = func_name
@@ -21,7 +21,7 @@ class Report:
         self._as_attached = as_attached
         self.report = None
         self.attach = None
-        if self._as_attached is not None:
+        if self._as_attached is True:
             self._make_attach_report()
         else:
             self._make_text_report()
@@ -36,7 +36,7 @@ class Report:
             '%s' % self._tback
         ]
         if self._header is not None:
-            report.insert(0, '%s' % self._header)
+            report[0] = '%s' % self._header
         if self._project_name is not None:
             report.insert(1, 'Project: %s' % self._project_name)
         if self._func_name is not None:
