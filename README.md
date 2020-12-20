@@ -18,8 +18,8 @@ def foo():
 ```
 
 token and chad_id can be used from environment variables:  
-`export EASY_NOTIFYER_TELEGRAM_TOKEN=123456789:QweRtyuWErtyZxcdsG`  
-`export EASY_NOTIFYER_TELEGRAM_CHAT_ID=123456789,876522345`
+`export EASY_NOTIFYER_TELEGRAM_TOKEN="123456789:QweRtyuWErtyZxcdsG"`  
+`export EASY_NOTIFYER_TELEGRAM_CHAT_ID="123456789,876522345"`
 ```python
 from easy_notifyer import async_telegram_reporter
 
@@ -53,12 +53,10 @@ def foo():
 
 
 ### Environment variables
-All optional. For comfort of use.
-```bash
-EASY_NOTIFYER_PROJECT_NAME=my_first_project                # for mark in report-message
-EASY_NOTIFYER_DATE_FORMAT=%Y-%m-%d %H:%M:%S                # datetime format in report-message
-EASY_NOTIFYER_FILENAME_DT_FORMAT=%Y-%m-%d %H_%M_%S         # datetime format for filename in as_attach report
-EASY_NOTIFYER_TELEGRAM_TOKEN=123456789:QweRtyuWErtyZxcdsG  # Telegram bot token. https://core.telegram.org/bots#6-botfather
-EASY_NOTIFYER_TELEGRAM_CHAT_ID=123456789,876522345          # int or int separated by commas. 
-EASY_NOTIFYER_TELEGRAM_API_URL=https://api.telegram.org     # if need use a proxy for api telegram.
-```
+All optional. For comfort of use.  
+`EASY_NOTIFYER_PROJECT_NAME="my_first_project"` - for mark in report-message  
+`EASY_NOTIFYER_DATE_FORMAT="%Y-%m-%d %H:%M:%S"` - datetime format in report-message  
+`EASY_NOTIFYER_FILENAME_DT_FORMAT="%Y-%m-%d %H_%M_%S"` - datetime format for filename in as_attach report  
+`EASY_NOTIFYER_TELEGRAM_TOKEN="123456789:QweRtyuWErtyZ"` - Telegram bot token. [Get token](https://core.telegram.org/bots#6-botfather)  
+`EASY_NOTIFYER_TELEGRAM_CHAT_ID="123456789, 876522345"` - int or int separated by commas.  
+`EASY_NOTIFYER_TELEGRAM_API_URL="https://api.telegram.org"` - if need use a proxy for api telegram.  
