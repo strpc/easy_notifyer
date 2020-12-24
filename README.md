@@ -1,6 +1,6 @@
 # Easy Notifyer
-----
-Easy bug reporter for small projects or sentry on minimums.  
+
+Easy bug reporter for small projects or Sentry on minimums.  
 
 ----
 
