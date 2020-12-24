@@ -16,8 +16,8 @@ def read(filename: str):
 
 setup(
     name='easy_notifyer',
-    version='0.0.1',
-    description='Easy notifyer from python to your messangers',
+    version='0.0.2',
+    description='Easy bug reporter for small projects or Sentry on minimums.',
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
     long_description=read('README.md'),
