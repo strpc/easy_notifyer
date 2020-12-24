@@ -2,10 +2,12 @@
 ----
 Easy bug reporter for small projects or sentry on minimums.  
 
+----
 
 ### Install  
 `pip install easy-notifyer`
 
+----
 
 ### Example usage:  
 #### Telegram reporter
@@ -37,7 +39,7 @@ from easy_notifyer import async_telegram_reporter
     exceptions=OSError,        # can be tuple from exceptions
     as_attached=True,          # to send traceback as a file
     filename='bar_report.log'  # custom filename for attach
-    header='Testing for bar',  # first line in message-report
+    header='Testing for bar',  # first line in message-report. default: "Your program has crashed ☠️"
 )
 async def bar():
     ...
@@ -51,7 +53,7 @@ from easy_notifyer import telegram_reporter
 
 
 @telegram_reporter(
-    header='*Test request to http://example.com*', 
+    header='Test request to http://example.com', 
     disable_web_page_preview=True,  # not worked if as_attach=True
     disable_notification=True,
 )
@@ -125,7 +127,7 @@ from easy_notifyer import async_mailer_reporter
     exceptions=OSError,             # can be tuple from exceptions
     as_attached=True,               # to send traceback as a file
     filename='bar_report.log',      # custom filename for attach
-    header='Testing for bar',       # first line in message-report
+    header='Testing for bar',       # first line in message-report. default: "Your program has crashed ☠️"
     subject='hello from foobar',    # set custom subject for message
 )
 async def foobar():
@@ -176,5 +178,5 @@ All optional. For comfortable using.
 `export EASY_NOTIFYER_MAILER_SSL=False` - set SSL mode for connection with server.  
 `export EASY_NOTIFYER_MAILER_LOGIN=login@example.com` - set login for authorization on server.  
 `export EASY_NOTIFYER_MAILER_PASSWORD=qwerty12345` - set password for authorization on server.  
-`export EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from*.  
-`export EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to*.    
+`export EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from* message.  
+`export EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to* message.    
