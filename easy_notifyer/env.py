@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring, invalid-name, invalid-envvar-default
 import os
 from dataclasses import dataclass
 
@@ -9,6 +10,7 @@ __all__ = [
 
 @dataclass
 class EnvTelegram:
+    """Enironment variables of telegram"""
     EASY_NOTIFYER_PROJECT_NAME: str = os.getenv('EASY_NOTIFYER_PROJECT_NAME')
     EASY_NOTIFYER_DATE_FORMAT: str = os.getenv('EASY_NOTIFYER_DATE_FORMAT',
                                                '%Y-%m-%d %H:%M:%S')
@@ -22,6 +24,7 @@ class EnvTelegram:
 
 @dataclass
 class EnvMailer:
+    """Enironment variables of mailer"""
     EASY_NOTIFYER_MAILER_HOST: str = os.getenv('EASY_NOTIFYER_MAILER_HOST')
     EASY_NOTIFYER_MAILER_PORT: str = os.getenv('EASY_NOTIFYER_MAILER_PORT')
     EASY_NOTIFYER_MAILER_LOGIN: str = os.getenv('EASY_NOTIFYER_MAILER_LOGIN')
@@ -33,4 +36,4 @@ class EnvMailer:
 
 @dataclass
 class Env(EnvTelegram, EnvMailer):
-    ...
+    """Hub enironment variables"""
