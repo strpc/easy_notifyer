@@ -1,3 +1,4 @@
+import os
 from itertools import chain
 from setuptools import setup
 
@@ -8,12 +9,20 @@ EXTRAS = {
 }
 
 
+def read(filename: str):
+    """Open file"""
+    return open(os.path.join(os.path.dirname(__file__), filename)).read().strip()
+
+
 setup(
     name='easy_notifyer',
     version='0.0.1',
     description='Easy notifyer from python to your messangers',
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
+    long_description=read('README.md'),
+    long_description_content_type="text/markdown",
+    download_url='https://pypi.python.org/pypi/easy-notifyer',
     install_requires=EXTRAS['telegram'],
     extras_require={
         'telegram': EXTRAS['telegram'],
@@ -26,4 +35,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    license='MIT',
+    keywords=['easy-notifyer', 'telegram', 'mailer', 'mail-client'],
 )
