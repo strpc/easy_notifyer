@@ -61,14 +61,14 @@ def foo():
 from easy_notifyer import Mailer
 
 def main():
-    mailer = Mailer()
-    try:
-        raise ValueError
-    except ValueError:
-        mailer.send_message(message='Something went wrong')
-    
-    file = open('image from main.jpg', 'rb')
-    mailer.send_message(attach=file, filename='my_image.jpg')
-    mailer.send_message(attach=b'hello world from main func')
-    mailer.send_message(attach=b'hello world from main func', filename='hello.txt')
+    with Mailer() as mailer:
+        try:
+            raise ValueError
+        except ValueError:
+            mailer.send_message(message='Something went wrong')
+        
+        file = open('image from main.jpg', 'rb')
+        mailer.send_message(attach=file, filename='my_image.jpg')
+        mailer.send_message(attach=b'hello world from main func')
+        mailer.send_message(attach=b'hello world from main func', filename='hello.txt')
 ```
