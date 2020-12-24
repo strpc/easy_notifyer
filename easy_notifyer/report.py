@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods, too-many-instance-attributes
 from datetime import datetime
 from socket import gethostname
 from typing import Optional
@@ -6,6 +7,7 @@ from easy_notifyer.env import Env
 
 
 class Report:
+    """Object for create report"""
     def __init__(
             self,
             tback: str,
@@ -27,6 +29,7 @@ class Report:
             self._make_text_report()
 
     def _make_text_report(self):
+        """Formatting text report before sending."""
         crash_time = datetime.now().replace(microsecond=0)
         report = [
             "Your program has crashed ☠️",
@@ -44,6 +47,7 @@ class Report:
         self.report = '\n'.join(report)
 
     def _make_attach_report(self):
+        """Formatting report with attach before sending."""
         crash_time = datetime.now().replace(microsecond=0)
         report = [
             "Your program has crashed ☠️",
