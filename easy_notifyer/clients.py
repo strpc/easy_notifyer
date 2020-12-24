@@ -1,9 +1,11 @@
+# pylint: disable=missing-module-docstring, too-few-public-methods
 from typing import Dict, Optional
 
 from httpx import AsyncClient, Client, Response
 
 
 class AsyncRequests:
+    """Async client for requests"""
     def __init__(self):
         self._client = AsyncClient()
 
@@ -16,11 +18,13 @@ class AsyncRequests:
             data: Optional[Dict] = None,
             files: Optional[Dict] = None,
     ) -> Response:
+        """Send async post request"""
         async with self._client as client:
             return await client.post(url=url, params=params, json=body, data=data, files=files)
 
 
 class Requests:
+    """Client for requests"""
     def __init__(self):
         self._client = Client()
 
@@ -33,4 +37,5 @@ class Requests:
             data: Optional[Dict] = None,
             files: Optional[Dict] = None,
     ) -> Response:
+        """Send post request"""
         return self._client.post(url=url, params=params, json=body, data=data, files=files)
