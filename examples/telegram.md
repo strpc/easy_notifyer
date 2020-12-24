@@ -30,6 +30,7 @@ async def bar():
     a = 1 / 0
  
 
+@telegram_reporter(exceptions=AttributeError)  # all errors except attributeerror will be received without notification
 @telegram_reporter(
     header='www report',
     disable_notification=True,
