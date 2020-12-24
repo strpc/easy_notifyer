@@ -106,7 +106,7 @@ class Mailer:
     def send_message(
             self,
             *,
-            message: str,
+            message: Optional[str] = None,
             from_addr: Optional[str] = None,
             to_addrs: Optional[Union[str, List[str]]] = None,
             subject: Optional[str] = None,
@@ -116,7 +116,7 @@ class Mailer:
         """
         Send email.
         Args:
-            message(str): Text body of message.
+            message(str, optional): Text body of message.
             from_addr(str, optional): the address sending this mail. Can be use from environment
                 variable - EASY_NOTIFYER_MAILER_FROM
             to_addrs(str, list(str), optional): addresses to send this mail to. Can be use from
