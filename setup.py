@@ -16,8 +16,8 @@ def read(filename: str):
 
 setup(
     name='easy_notifyer',
-    version='0.0.2',
-    description='Easy bug reporter for small projects or Sentry on minimums.',
+    version='0.0.3',
+    description='Easy bug reporter for small projects or Sentry on minimums. Async support.',
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
     long_description=read('README.md'),
