@@ -25,18 +25,18 @@ def telegram_reporter(
         token(str, optional): Telegram bot token. Can be use from environment variable
             `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
         chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         exceptions(exception, tuple(exception), optional): Exceptions for handle. Two and more - in
-        tuple. Default - Exception.
+            tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
         **params:
             filename(str, optional): filename for sending report as file.
-            Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-            EASY_NOTIFYER_FILENAME_DT_FORMAT
+                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
+                EASY_NOTIFYER_FILENAME_DT_FORMAT
             disable_notification(bool): True to disable notification of message.
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
-            as_attached report.
+                as_attached report.
     """
     exceptions = exceptions or Exception
 
@@ -75,18 +75,18 @@ def async_telegram_reporter(
         token(str, optional): Telegram bot token. Can be use from environment variable
             `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
         chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         exceptions(exception, tuple(exception), optional): Exceptions for handle. Two and more - in
-        tuple. Default - Exception.
+            tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
         **params:
             filename(str, optional): filename for sending report as file.
-            Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-            EASY_NOTIFYER_FILENAME_DT_FORMAT
+                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
+                EASY_NOTIFYER_FILENAME_DT_FORMAT
             disable_notification(bool): True to disable notification of message.
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
-            as_attached report.
+                as_attached report.
     """
     exceptions = exceptions or Exception
 
@@ -121,8 +121,8 @@ def _get_filename(filename: Optional[str] = None) -> str:
     Generate of filename for sending report as a file.
     Args:
         filename(str, optional): filename, if exists. Else - "{datetime}.txt". Format of datetime
-        can be set in environment variable `EASY_NOTIFYER_FILENAME_DT_FORMAT`.
-        Default - "%Y-%m-%d %H_%M_%S"
+            can be set in environment variable `EASY_NOTIFYER_FILENAME_DT_FORMAT`.
+            Default - "%Y-%m-%d %H_%M_%S"
     Returns:
         string of filename.
     """
@@ -148,7 +148,6 @@ def _report_maker(
         func_name(str, optional): name of function when raised error.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
-
     Returns:
         isinstance of Report obj.
     """
@@ -169,12 +168,12 @@ def _report_telegram_handler(
         token(str, optional): Telegram bot token. Can be use from environment variable
             `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
         chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         **kwargs:
             filename(str, optional): make report for sending as a file.
             disable_notification(bool): True to disable notification of message.
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
-            as_attached report.
+                as_attached report.
     """
     bot = Telegram(token=token, chat_id=chat_id)
     if report.attach is not None:
@@ -198,14 +197,14 @@ async def _async_report_telegram_handler(
         token(str, optional): Telegram bot token. Can be use from environment variable
             `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
         chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         **kwargs:
             filename(str, optional): filename for sending report as file.
-            Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-            EASY_NOTIFYER_FILENAME_DT_FORMAT
+                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
+                EASY_NOTIFYER_FILENAME_DT_FORMAT
             disable_notification(bool): True to disable notification of message.
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
-            as_attached report.
+                as_attached report.
     """
     bot = TelegramAsync(token=token, chat_id=chat_id)
     if report.attach is not None:
@@ -238,28 +237,28 @@ def mailer_reporter(
     Handler errors for sending report on email.
     Args:
         exceptions(exception, tuple(exception), optional): Exceptions for handle.
-        Two and more - in tuple. Default - Exception.
+            Two and more - in tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
         **params:
             host(str, optional): = post of smtp server. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_HOST
+                EASY_NOTIFYER_MAILER_HOST
             port(int, optional): = port of smtp server. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_PORT
+                EASY_NOTIFYER_MAILER_PORT
             login(str, optional): = login for auth in smtp server. Can be use from environment
-            variable -  EASY_NOTIFYER_MAILER_LOGIN
+                variable -  EASY_NOTIFYER_MAILER_LOGIN
             password(str, optional): password for auth in smtp server. Can be use from environment
-            variable - EASY_NOTIFYER_MAILER_PASSWORD
+                variable - EASY_NOTIFYER_MAILER_PASSWORD
             ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_SSL
+                EASY_NOTIFYER_MAILER_SSL
             from_addr(str, optional): the address sending this mail. Can be use from environment
-            variable - EASY_NOTIFYER_MAILER_FROM
-            to_addr(str, list(str), optional): addresses to send this mail to. Can be use from
-            environment variable - EASY_NOTIFYER_MAILER_TO
+                variable - EASY_NOTIFYER_MAILER_FROM
+            to_addrs(str, list(str), optional): addresses to send this mail to. Can be use from
+                environment variable - EASY_NOTIFYER_MAILER_TO
             subject(str, optional): subject of the mail.
             filename(str, optional): filename for sending report as file.
-            Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-            EASY_NOTIFYER_FILENAME_DT_FORMAT
+                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
+                EASY_NOTIFYER_FILENAME_DT_FORMAT
     """
     exceptions = exceptions or Exception
 
@@ -294,28 +293,28 @@ def async_mailer_reporter(
     Handler errors for sending report on email.
     Args:
         exceptions(exception, tuple(exception), optional): Exceptions for handle.
-        Two and more - in tuple. Default - Exception.
+            Two and more - in tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
         **params:
             host(str, optional): = post of smtp server. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_HOST
+                EASY_NOTIFYER_MAILER_HOST
             port(int, optional): = port of smtp server. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_PORT
+                EASY_NOTIFYER_MAILER_PORT
             login(str, optional): = login for auth in smtp server. Can be use from environment
-            variable -  EASY_NOTIFYER_MAILER_LOGIN
+                variable - EASY_NOTIFYER_MAILER_LOGIN
             password(str, optional): password for auth in smtp server. Can be use from environment
-            variable - EASY_NOTIFYER_MAILER_PASSWORD
+                variable - EASY_NOTIFYER_MAILER_PASSWORD
             ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
-            EASY_NOTIFYER_MAILER_SSL
+                EASY_NOTIFYER_MAILER_SSL
             from_addr(str, optional): the address sending this mail. Can be use from environment
-            variable - EASY_NOTIFYER_MAILER_FROM
-            to_addr(str, list(str), optional): addresses to send this mail to. Can be use from
-            environment variable - EASY_NOTIFYER_MAILER_TO
+                variable - EASY_NOTIFYER_MAILER_FROM
+            to_addrs(str, list(str), optional): addresses to send this mail to. Can be use from
+                environment variable - EASY_NOTIFYER_MAILER_TO
             subject(str, optional): subject of the mail.
             filename(str, optional): filename for sending report as file.
-            Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-            EASY_NOTIFYER_FILENAME_DT_FORMAT
+                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
+                EASY_NOTIFYER_FILENAME_DT_FORMAT
     """
     exceptions = exceptions or Exception
 
