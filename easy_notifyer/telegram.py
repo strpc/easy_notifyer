@@ -1,4 +1,6 @@
+# pylint: disable=too-few-public-methods
 import uuid
+import logging
 from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 
@@ -7,7 +9,11 @@ from easy_notifyer.env import Env
 from easy_notifyer.utils import get_telegram_creds, run_sync
 
 
+logger = logging.getLogger(__name__)
+
+
 class TelegramBase:
+    """Base class of telegram"""
     API_BASE_URL = Env.EASY_NOTIFYER_TELEGRAM_API_URL
     API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith('/') else API_BASE_URL
 
@@ -38,8 +44,6 @@ class TelegramBase:
             response(Reponse): instanse of Response
         """
         if response.status_code != 200:
-            import logging
-            logger = logging.getLogger(__name__)
             logger.error('Send message to telegram error. Response: %s', response.json())
 
     @staticmethod
@@ -51,11 +55,10 @@ class TelegramBase:
         """
         Preparation of attach for sending to telegram
         Args:
-            attach(bytes, str, binaryio, tuple: attach to send
+            attach(bytes, str, binaryio, tuple): attach to send
             filename: filename
-
         Returns:
-
+            {'document': (filename, b'file)}
         """
         filename = filename or uuid.uuid4().hex
         files = {}
@@ -71,6 +74,7 @@ class TelegramBase:
 
 
 class TelegramAsync(TelegramBase):
+    """Async client for telegram"""
     def __init__(
             self,
             *,
@@ -173,6 +177,7 @@ class TelegramAsync(TelegramBase):
 
 
 class Telegram(TelegramBase):
+    """Client of telegram"""
     def __init__(
             self,
             *,
