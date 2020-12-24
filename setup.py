@@ -21,4 +21,9 @@ setup(
         'all': list(chain.from_iterable(EXTRAS.values())),
     },
     python_requires='>=3.7, <4',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )
