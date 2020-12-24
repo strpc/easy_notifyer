@@ -173,10 +173,10 @@ All optional. For comfortable using.
 
 
 *Mail settings:*  
-`export EASY_NOTIFYER_MAILER_HOST=smtp.example.org` - set smtp server.  
-`export EASY_NOTIFYER_MAILER_PORT=587` - set port server.  
-`export EASY_NOTIFYER_MAILER_SSL=False` - set SSL mode for connection with server.  
-`export EASY_NOTIFYER_MAILER_LOGIN=login@example.com` - set login for authorization on server.  
-`export EASY_NOTIFYER_MAILER_PASSWORD=qwerty12345` - set password for authorization on server.  
-`export EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from* message.  
-`export EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to* message.    
+`EASY_NOTIFYER_MAILER_HOST=smtp.example.org` - set smtp server.  
+`EASY_NOTIFYER_MAILER_PORT=587` - set port server.  
+`EASY_NOTIFYER_MAILER_SSL=False` - set SSL mode for connection with server.  
+`EASY_NOTIFYER_MAILER_LOGIN=login@example.com` - set login for authorization on server.  
+`EASY_NOTIFYER_MAILER_PASSWORD=qwerty12345` - set password for authorization on server.  
+`EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from* message.  
+`EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to* message.    
