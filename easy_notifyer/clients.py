@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring, too-few-public-methods
+# pylint: disable=too-few-public-methods
 from typing import Dict, Optional
 
 from httpx import AsyncClient, Client, Response

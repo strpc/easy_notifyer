@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring, invalid-name, invalid-envvar-default
+# pylint: disable=invalid-name, invalid-envvar-default
 import os
 from dataclasses import dataclass
 
