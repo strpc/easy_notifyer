@@ -11,14 +11,14 @@ def foo():
 ```python
 import os
 
-from easy_notifyer import async_telegram_reporter, TelegramAsync
+from easy_notifyer import TelegramAsync, telegram_reporter
 
 # set token and chat_id as environment variables.
 os.environ.setdefault('EASY_NOTIFYER_TELEGRAM_TOKEN', "123456789:QweRtyuWErtyZxcdsG")
 os.environ.setdefault('EASY_NOTIFYER_TELEGRAM_CHAT_ID', "123456789,876522345")
 
 
-@async_telegram_reporter(
+@telegram_reporter(
     exceptions=ZeroDivisionError,
     as_attached=True,
     disable_notification=True,
