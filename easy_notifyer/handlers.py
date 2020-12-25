@@ -231,11 +231,12 @@ def mailer_reporter(
     exceptions = exceptions or Exception
 
     def decorator(func):
+        func_name = func.__name__
+        
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except exceptions as exc:
-                func_name = func.__name__
                 tback = traceback.format_exc()
                 report = await run_sync(
                     _report_maker,
@@ -251,7 +252,6 @@ def mailer_reporter(
             try:
                 return func(*args, **kwargs)
             except exceptions as exc:
-                func_name = func.__name__
                 tback = traceback.format_exc()
                 report = _report_maker(
                     tback=tback,
