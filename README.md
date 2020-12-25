@@ -5,7 +5,10 @@ Easy Notifyer
 ![image](https://img.shields.io/github/languages/code-size/strpc/easy_notifyer) 
 ![image](https://img.shields.io/badge/Python-3.7%2B-success) 
 ![image](https://img.shields.io/github/license/strpc/easy_notifyer?color=informational)   
+
+
 Easy bug reporter for small projects or Sentry on minimums. Async support.  
+
 ----
 
 ### Install  
