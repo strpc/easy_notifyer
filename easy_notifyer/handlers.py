@@ -42,12 +42,12 @@ def telegram_reporter(
     exceptions = exceptions or Exception
 
     def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        func_name = func.__name__
+        
+        def sync_wrapped_view(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
             except exceptions as exc:
-                func_name = func.__name__
                 tback = traceback.format_exc()
                 report = _report_maker(
                     tback=tback,
@@ -57,47 +57,11 @@ def telegram_reporter(
                 )
                 _report_telegram_handler(report=report, token=token, chat_id=chat_id, **params)
                 raise exc
-        return wrapper
-    return decorator
-
-
-def async_telegram_reporter(
-        *,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[List[int], int]] = None,
-        exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
-        header: Optional[str] = None,
-        as_attached: bool = False,
-        **params
-):
-    """
-    Async handler errors for sending report in telegram.
-    Args:
-        token(str, optional): Telegram bot token. Can be use from environment variable
-            `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
-        chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-            variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
-        exceptions(exception, tuple(exception), optional): Exceptions for handle. Two and more - in
-            tuple. Default - Exception.
-        header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
-        as_attached(bool, optional): make report for sending as a file. Default - False.
-        **params:
-            filename(str, optional): filename for sending report as file.
-                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-                EASY_NOTIFYER_FILENAME_DT_FORMAT
-            disable_notification(bool): True to disable notification of message.
-            disable_web_page_preview(bool): True to disable web preview for links. Not worked for
-                as_attached report.
-    """
-    exceptions = exceptions or Exception
-
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
+            
+        async def async_wrapped_view(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except exceptions as exc:
-                func_name = func.__name__
                 tback = traceback.format_exc()
                 report = await run_sync(
                     _report_maker,
@@ -113,7 +77,10 @@ def async_telegram_reporter(
                     **params
                 )
                 raise exc
-        return wrapper
+        
+        if asyncio.iscoroutinefunction(func):
+            return functools.wraps(func)(async_wrapped_view)
+        return functools.wraps(func)(sync_wrapped_view)
     return decorator
 
 

@@ -1,5 +1,4 @@
 from easy_notifyer.handlers import (
-    async_telegram_reporter,
     mailer_reporter,
     telegram_reporter,
 )
@@ -14,7 +13,6 @@ __all__ = [
     "Mailer",
     "Telegram",
     "TelegramAsync",
-    "async_telegram_reporter",
     "mailer_reporter",
     "telegram_reporter",
 ]
