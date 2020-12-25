@@ -20,7 +20,7 @@ def bar():
 ```python
 import os
 
-from easy_notifyer import async_mailer_reporter, mailer_reporter
+from easy_notifyer import mailer_reporter
 
 
 # set params as environment variables.
@@ -33,7 +33,7 @@ os.environ.setdefault('EASY_NOTIFYER_MAILER_TO', "myemail@gmail.com, mysecondmai
 os.environ.setdefault('EASY_NOTIFYER_MAILER_SSL', "False")
 
 
-@async_mailer_reporter(
+@mailer_reporter(
     exceptions=ZeroDivisionError,
     as_attached=True,
     filename='bar_report.log',

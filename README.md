@@ -1,6 +1,13 @@
-# Easy Notifyer
+Easy Notifyer
+========
 
-Easy bug reporter for small projects or Sentry on minimums.  
+![image](https://img.shields.io/pypi/v/easy_notifyer?color=yellowgreen) 
+![image](https://img.shields.io/github/languages/code-size/strpc/easy_notifyer) 
+![image](https://img.shields.io/badge/Python-3.7%2B-success) 
+![image](https://img.shields.io/github/license/strpc/easy_notifyer?color=informational)   
+
+
+Easy bug reporter for small projects or Sentry on minimums. Async support.  
 
 ----
 
@@ -120,10 +127,10 @@ def bar():
 `export EASY_NOTIFYER_MAILER_SSL=False`  
 
 ```python
-from easy_notifyer import async_mailer_reporter
+from easy_notifyer import mailer_reporter
 
 
-@async_mailer_reporter(
+@mailer_reporter(
     exceptions=OSError,             # can be tuple from exceptions
     as_attached=True,               # to send traceback as a file
     filename='bar_report.log',      # custom filename for attach
