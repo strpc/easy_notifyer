@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
-import uuid
 import logging
+import uuid
 from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 
@@ -95,18 +95,18 @@ class TelegramAsync(TelegramBase):
             self,
             *,
             method_api: str,
+            headers: Optional[Dict] = None,
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
-            data: Optional[Dict] = None,
             files: Optional[Dict] = None
     ) -> Response:
         """
         Send async post request.
         Args:
             method_api(str): method of api telegram
+            headers(dict, optional): headers for of request.
             params(dict, optional): params of request.
             body(dict, optional): body of request.
-            data(dict, optional): data of request.
             files(dict, optional): files of request in format ('filename.txt', b'filedata').
 
         Returns:
@@ -114,9 +114,9 @@ class TelegramAsync(TelegramBase):
         """
         response = await self._client.post(
             url=self._base_api_url + method_api,
+            headers=headers,
             params=params,
             body=body,
-            data=data,
             files=files,
         )
         await run_sync(self._response_handler, response)
@@ -198,18 +198,18 @@ class Telegram(TelegramBase):
             self,
             *,
             method_api: str,
+            headers: Optional[Dict] = None,
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
-            data: Optional[Dict] = None,
             files: Optional[Dict] = None,
     ) -> Response:
         """
         Send post request.
         Args:
             method_api(str): method of api telegram
+            headers(dict, optional): headers for of request.
             params(dict, optional): params of request.
             body(dict, optional): body of request.
-            data(dict, optional): data of request.
             files(dict, optional): files of request in format ('filename.txt', b'filedata').
 
         Returns:
@@ -217,9 +217,9 @@ class Telegram(TelegramBase):
         """
         response = self._client.post(
             url=self._base_api_url + method_api,
+            headers=headers,
             params=params,
             body=body,
-            data=data,
             files=files
         )
         self._response_handler(response)
