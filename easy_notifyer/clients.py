@@ -4,7 +4,8 @@ from typing import Dict, Optional
 from urllib import request
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from easy_notifyer.utils import MultiPartForm, run_sync
+from easy_notifyer.types import MultiPartForm
+from easy_notifyer.utils import run_sync
 
 
 class RequestsBase:
