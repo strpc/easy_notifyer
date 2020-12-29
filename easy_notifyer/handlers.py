@@ -43,7 +43,7 @@ def telegram_reporter(
 
     def decorator(func):
         func_name = func.__name__
-        
+
         def sync_wrapped_view(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
@@ -57,7 +57,7 @@ def telegram_reporter(
                 )
                 _report_telegram_handler(report=report, token=token, chat_id=chat_id, **params)
                 raise exc
-            
+
         async def async_wrapped_view(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
@@ -77,7 +77,7 @@ def telegram_reporter(
                     **params
                 )
                 raise exc
-        
+
         if asyncio.iscoroutinefunction(func):
             return functools.wraps(func)(async_wrapped_view)
         return functools.wraps(func)(sync_wrapped_view)
@@ -232,7 +232,7 @@ def mailer_reporter(
 
     def decorator(func):
         func_name = func.__name__
-        
+
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
