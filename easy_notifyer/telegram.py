@@ -49,7 +49,12 @@ class TelegramBase:
     @staticmethod
     def _prepare_attach(
             *,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            attach: Union[
+                bytes,
+                str,
+                BinaryIO,
+                Tuple[str, Union[BinaryIO, bytes]]
+            ],
             filename: Optional[str] = None,
     ) -> Dict:
         """
@@ -249,7 +254,12 @@ class Telegram(TelegramBase):
 
     def send_attach(
             self,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            attach: Union[
+                bytes,
+                str,
+                BinaryIO,
+                Tuple[str, Union[BinaryIO, bytes]]
+            ],
             *,
             msg: Optional[str] = None,
             filename: Optional[str] = None,

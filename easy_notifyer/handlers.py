@@ -15,7 +15,11 @@ def telegram_reporter(
         *,
         token: Optional[str] = None,
         chat_id: Optional[Union[List[int], int]] = None,
-        exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+        exceptions: Optional[
+            Union[
+                Type[BaseException],
+                Tuple[Type[BaseException], ...]
+            ]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
         **params
@@ -196,7 +200,11 @@ def _report_mailer_handler(*, report: Report, **params):
 
 def mailer_reporter(
         *,
-        exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+        exceptions: Optional[
+            Union[
+                Type[BaseException],
+                Tuple[Type[BaseException], ...]
+            ]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
         **params
