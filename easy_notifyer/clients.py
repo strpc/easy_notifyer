@@ -34,12 +34,13 @@ class Requests(RequestsBase):
     ) -> 'Response':
         """Send post request"""
         data = None
+        headers = headers or {}
         if params is not None:
             url = self._add_params(url, params)
         if body is not None or files is not None:
             form = MultiPartForm(body=body, files=files)
             data = bytes(form)
-            headers = {**headers, **form.header} if headers is not None else form.header
+            headers = {**headers, **form.header}
 
         req = self._client(url=url, headers=headers, data=data)
         resp: HTTPResponse = request.urlopen(req)
