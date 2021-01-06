@@ -6,7 +6,15 @@ from setuptools import setup, find_packages
 
 NAME_PACKAGE = 'easy_notifyer'
 EXTRAS = {
-    'dev': ['pytest', 'pylint', 'flake8', 'isort', 'bumpversion']
+    'dev': [
+        'pytest',
+        'pytest-mock',
+        'pytest-asyncio',
+        'pylint',
+        'flake8',
+        'isort',
+        'bumpversion',
+    ]
 }
 
 
