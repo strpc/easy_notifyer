@@ -7,7 +7,7 @@ Easy Notifyer
 ![image](https://img.shields.io/github/license/strpc/easy_notifyer?color=informational)   
 
 
-Easy bug reporter for small projects or Sentry on minimums. Async support.  
+Easy bug reporter for small projects. Zero dependencies - download and run. Asyncio support.  
 
 ----
 
@@ -164,26 +164,26 @@ def main():
 
 ----
 
-### Environment variables
+### Environment
 All optional. For comfortable using.  
 
-*Basic settings:*  
-`EASY_NOTIFYER_PROJECT_NAME="my_first_project"` - for mark in report-message from second line.  
-`EASY_NOTIFYER_DATE_FORMAT="%Y-%m-%d %H:%M:%S"` - datetime format in report-message.  
-`EASY_NOTIFYER_FILENAME_DT_FORMAT="%Y-%m-%d %H_%M_%S"` - datetime format for filename in as_attach report.  
+*Features:*  
+ * `EASY_NOTIFYER_PROJECT_NAME="my_first_project"` - for mark in report-message from second line.  
+ * `EASY_NOTIFYER_DATE_FORMAT` - [datetime format](https://strftime.org/) in report-message. (`default=%Y-%m-%d %H:%M:%S`)  
+ * `EASY_NOTIFYER_FILENAME_DT_FORMAT` - [datetime format](https://strftime.org/) for filename in as_attach report. (`default=%Y-%m-%d %H_%M_%S`)  
 
 
 *Telegram settings:*  
-`EASY_NOTIFYER_TELEGRAM_TOKEN="123456789:QweRtyuWErtyZ"` - Telegram bot token. [Get token](https://core.telegram.org/bots#6-botfather)  
-`EASY_NOTIFYER_TELEGRAM_CHAT_ID="123456789, 876522345"` - int or int separated by commas.  
-`EASY_NOTIFYER_TELEGRAM_API_URL="https://api.telegram.org"` - if need to use a proxy for api telegram.  
+ * `EASY_NOTIFYER_TELEGRAM_TOKEN="123456789:QweRtyuWErtyZ"` - Telegram bot token. [Get token](https://core.telegram.org/bots#6-botfather)  
+ * `EASY_NOTIFYER_TELEGRAM_CHAT_ID="123456789, 876522345"` - int or int separated by commas.  
+ * `EASY_NOTIFYER_TELEGRAM_API_URL="https://api.telegram.org"` - if need to use a proxy for api telegram.  
 
 
 *Mail settings:*  
-`EASY_NOTIFYER_MAILER_HOST=smtp.example.org` - set smtp server.  
-`EASY_NOTIFYER_MAILER_PORT=587` - set port server.  
-`EASY_NOTIFYER_MAILER_SSL=False` - set SSL mode for connection with server.  
-`EASY_NOTIFYER_MAILER_LOGIN=login@example.com` - set login for authorization on server.  
-`EASY_NOTIFYER_MAILER_PASSWORD=qwerty12345` - set password for authorization on server.  
-`EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from* message.  
-`EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to* message.    
+ * `EASY_NOTIFYER_MAILER_HOST=smtp.example.org` - set smtp server.  
+ * `EASY_NOTIFYER_MAILER_PORT=587` - set port server.  
+ * `EASY_NOTIFYER_MAILER_SSL=False` - set SSL mode for connection with server.  
+ * `EASY_NOTIFYER_MAILER_LOGIN=login@example.com` - set login for authorization on server.  
+ * `EASY_NOTIFYER_MAILER_PASSWORD=qwerty12345` - set password for authorization on server.  
+ * `EASY_NOTIFYER_MAILER_FROM=login@example.com` - set *from* message.  
+ * `EASY_NOTIFYER_MAILER_TO="myemail@gmail.com, mysecondmail@mail.com"` - set *to* message.    
