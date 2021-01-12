@@ -49,4 +49,4 @@ test:
 	pytest tests/
 
 #sphinx:
-#     sphinx-apidoc -f -o ./docs/ easy_notifyer
+#     sphinx-apidoc -f -o ./docs/ $(PACKAGE_NAME)
