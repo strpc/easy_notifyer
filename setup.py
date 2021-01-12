@@ -5,6 +5,8 @@ from setuptools import setup, find_packages
 
 
 NAME_PACKAGE = 'easy_notifyer'
+DESCRIPTION = 'Easy bug reporter for small projects. ' \
+              'Zero dependencies - download and run. Asyncio support.'
 EXTRAS = {
     'dev': [
         'pytest',
@@ -42,7 +44,7 @@ def read_version() -> str:
 setup(
     name=NAME_PACKAGE,
     version=read_version(),
-    description='Easy bug reporter for small projects or Sentry on minimums. Async support.',
+    description=DESCRIPTION,
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
     long_description=read('README.md'),
