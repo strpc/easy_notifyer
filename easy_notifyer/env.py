@@ -9,17 +9,24 @@ __all__ = [
 
 
 @dataclass
-class EnvTelegram:
-    """Enironment variables of telegram"""
+class EnvBase:
+    """Base environment variables"""
     EASY_NOTIFYER_PROJECT_NAME: str = os.getenv('EASY_NOTIFYER_PROJECT_NAME')
     EASY_NOTIFYER_DATE_FORMAT: str = os.getenv('EASY_NOTIFYER_DATE_FORMAT',
                                                '%Y-%m-%d %H:%M:%S')
-    EASY_NOTIFYER_FILENAME_DT_FORMAT: str = os.getenv('EASY_NOTIFYER_FILENAME_DT_FORMAT',
-                                                      '%Y-%m-%d %H_%M_%S')
+    EASY_NOTIFYER_FILENAME_DT_FORMAT: str = os.getenv(
+        'EASY_NOTIFYER_FILENAME_DT_FORMAT', '%Y-%m-%d %H_%M_%S'
+    )
+
+
+@dataclass
+class EnvTelegram:
+    """Enironment variables of telegram"""
     EASY_NOTIFYER_TELEGRAM_TOKEN: str = os.getenv('EASY_NOTIFYER_TELEGRAM_TOKEN')
     EASY_NOTIFYER_TELEGRAM_CHAT_ID: str = os.getenv('EASY_NOTIFYER_TELEGRAM_CHAT_ID')
-    EASY_NOTIFYER_TELEGRAM_API_URL: str = os.getenv('EASY_NOTIFYER_TELEGRAM_API_URL',
-                                                    'https://api.telegram.org/')
+    EASY_NOTIFYER_TELEGRAM_API_URL: str = os.getenv(
+        'EASY_NOTIFYER_TELEGRAM_API_URL', 'https://api.telegram.org/'
+    )
 
 
 @dataclass
@@ -35,5 +42,5 @@ class EnvMailer:
 
 
 @dataclass
-class Env(EnvTelegram, EnvMailer):
+class Env(EnvBase, EnvTelegram, EnvMailer):
     """Hub enironment variables"""
