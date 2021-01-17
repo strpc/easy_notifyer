@@ -19,7 +19,7 @@ class Report:
         self._func_name = func_name
         self._header = header
         self._host_name = gethostname()
-        self._project_name = Env.EASY_NOTIFYER_PROJECT_NAME
+        self._service_name = Env.EASY_NOTIFYER_SERVICE_NAME
         self._as_attached = as_attached
         self.report = None
         self.attach = None
@@ -40,8 +40,8 @@ class Report:
         ]
         if self._header is not None:
             report[0] = '%s' % self._header
-        if self._project_name is not None:
-            report.insert(1, 'Project: %s' % self._project_name)
+        if self._service_name is not None:
+            report.insert(1, 'Service: %s' % self._service_name)
         if self._func_name is not None:
             report.insert(3, 'Main call: %s' % self._func_name)
         self.report = '\n'.join(report)
@@ -56,8 +56,8 @@ class Report:
         ]
         if self._header is not None:
             report.insert(0, '%s' % self._header)
-        if self._project_name is not None:
-            report.insert(1, 'Project: %s' % self._project_name)
+        if self._service_name is not None:
+            report.insert(1, 'Service: %s' % self._service_name)
         if self._func_name is not None:
             report.insert(2, 'Main call: %s' % self._func_name)
         self.report = '\n'.join(report)

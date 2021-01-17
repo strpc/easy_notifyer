@@ -168,7 +168,7 @@ def main():
 All optional. For comfortable using.  
 
 *Features:*  
- * `EASY_NOTIFYER_PROJECT_NAME="my_first_project"` - for mark in report-message from second line.  
+ * `EASY_NOTIFYER_SERVICE_NAME="my_first_project"` - for mark in report-message from second line.  
  * `EASY_NOTIFYER_DATE_FORMAT` - [datetime format](https://strftime.org/) in report-message. (`default=%Y-%m-%d %H:%M:%S`)  
  * `EASY_NOTIFYER_FILENAME_DT_FORMAT` - [datetime format](https://strftime.org/) for filename in as_attach report. (`default=%Y-%m-%d %H_%M_%S`)  
 

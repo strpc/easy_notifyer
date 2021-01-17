@@ -11,7 +11,7 @@ __all__ = [
 @dataclass
 class EnvBase:
     """Base environment variables"""
-    EASY_NOTIFYER_PROJECT_NAME: str = os.getenv('EASY_NOTIFYER_PROJECT_NAME')
+    EASY_NOTIFYER_SERVICE_NAME: str = os.getenv('EASY_NOTIFYER_SERVICE_NAME')
     EASY_NOTIFYER_DATE_FORMAT: str = os.getenv(
         'EASY_NOTIFYER_DATE_FORMAT', '%Y-%m-%d %H:%M:%S'
     )
