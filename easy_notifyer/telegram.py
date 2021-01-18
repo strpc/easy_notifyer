@@ -78,109 +78,6 @@ class TelegramBase:
         return files
 
 
-class TelegramAsync(TelegramBase):
-    """Async client for telegram"""
-    def __init__(
-            self,
-            *,
-            token: Optional[str] = None,
-            chat_id: Optional[Union[int, List[int]]] = None,
-    ):
-        """
-        Args:
-            token(str, optional): Telegram bot token. Can be use from environment variable
-            `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
-        """
-        super().__init__(token=token, chat_id=chat_id)
-        self._client = AsyncRequests()
-
-    async def _send_post(
-            self,
-            *,
-            method_api: str,
-            headers: Optional[Dict] = None,
-            params: Optional[Dict] = None,
-            body: Optional[Dict] = None,
-            files: Optional[Dict] = None
-    ) -> Response:
-        """
-        Send async post request.
-        Args:
-            method_api(str): method of api telegram
-            headers(dict, optional): headers for of request.
-            params(dict, optional): params of request.
-            body(dict, optional): body of request.
-            files(dict, optional): files of request in format ('filename.txt', b'filedata').
-
-        Returns:
-            instance of Response.
-        """
-        response = await self._client.post(
-            url=self._base_api_url + method_api,
-            headers=headers,
-            params=params,
-            body=body,
-            files=files,
-        )
-        await run_sync(self._response_handler, response)
-        return response
-
-    async def send_message(self, msg: str, **kwargs):
-        """
-        Send message.
-        Args:
-            msg(str): text of message.
-            **kwargs:
-                disable_notification(bool): True to disable notification of message.
-                disable_web_page_preview(bool): True to disable web preview for links.
-        """
-        method_api = 'sendMessage'
-
-        for chat_id in self._chat_ids:
-            body = {
-                'chat_id': chat_id,
-                'text': msg,
-            }
-            if kwargs.get('disable_web_page_preview') is not None:
-                body['disable_web_page_preview'] = True
-            if kwargs.get('disable_notification') is not None:
-                body['disable_notification'] = True
-            await self._send_post(method_api=method_api, body=body)
-
-    async def send_attach(
-            self,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
-            *,
-            msg: Optional[str] = None,
-            filename: Optional[str] = None,
-            **kwargs
-    ):
-        """
-        Send file.
-        Args:
-            attach (bytes, str, tuple): file to send. if tuple, then
-            ('filename.txt', b'text of file').
-            msg (str, optional): text of message.
-            filename(str, optional): filename if attach is string or bytes.
-            **kwargs:
-                disable_notification(bool): True to disable notification of message.
-        """
-        method_api = 'sendDocument'
-        files = await run_sync(self._prepare_attach, attach=attach, filename=filename)
-
-        params = {}
-        if msg is not None:
-            params['caption'] = msg
-        if kwargs.get('disable_notification') is not None:
-            params['disable_notification'] = True
-
-        for chat_id in self._chat_ids:
-            params['chat_id'] = chat_id
-            await self._send_post(method_api=method_api, params=params, files=files)
-
-
 class Telegram(TelegramBase):
     """Client of telegram"""
     def __init__(
@@ -198,6 +95,38 @@ class Telegram(TelegramBase):
         """
         super().__init__(token=token, chat_id=chat_id)
         self._client = Requests()
+        self._async_client = AsyncRequests()
+
+    async def _async_send_post(
+            self,
+            *,
+            method_api: str,
+            headers: Optional[Dict] = None,
+            params: Optional[Dict] = None,
+            body: Optional[Dict] = None,
+            files: Optional[Dict] = None,
+    ) -> Response:
+        """
+        Send async post request.
+        Args:
+            method_api(str): method of api telegram
+            headers(dict, optional): headers for of request.
+            params(dict, optional): params of request.
+            body(dict, optional): body of request.
+            files(dict, optional): files of request in format ('filename.txt', b'filedata').
+
+        Returns:
+            instance of Response.
+        """
+        response = await self._async_client.post(
+            url=self._base_api_url + method_api,
+            headers=headers,
+            params=params,
+            body=body,
+            files=files,
+        )
+        await run_sync(self._response_handler, response)
+        return response
 
     def _send_post(
             self,
@@ -230,6 +159,28 @@ class Telegram(TelegramBase):
         self._response_handler(response)
         return response
 
+    async def async_send_message(self, msg: str, **kwargs):
+        """
+        Send message.
+        Args:
+            msg(str): text of message.
+            **kwargs:
+                disable_notification(bool): True to disable notification of message.
+                disable_web_page_preview(bool): True to disable web preview for links.
+        """
+        method_api = 'sendMessage'
+
+        for chat_id in self._chat_ids:
+            body = {
+                'chat_id': chat_id,
+                'text': msg,
+            }
+            if kwargs.get('disable_web_page_preview') is not None:
+                body['disable_web_page_preview'] = True
+            if kwargs.get('disable_notification') is not None:
+                body['disable_notification'] = True
+            await self._async_send_post(method_api=method_api, body=body)
+
     def send_message(self, msg: str, **kwargs):
         """
         Send message.
@@ -251,6 +202,37 @@ class Telegram(TelegramBase):
             if kwargs.get('disable_notification') is not None:
                 body['disable_notification'] = True
             self._send_post(method_api=method_api, body=body)
+
+    async def async_send_attach(
+            self,
+            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            *,
+            msg: Optional[str] = None,
+            filename: Optional[str] = None,
+            **kwargs
+    ):
+        """
+        Send file.
+        Args:
+            attach (bytes, str, tuple): file to send. if tuple, then
+            ('filename.txt', b'text of file').
+            msg (str, optional): text of message.
+            filename(str, optional): filename if attach is string or bytes.
+            **kwargs:
+                disable_notification(bool): True to disable notification of message.
+        """
+        method_api = 'sendDocument'
+        files = await run_sync(self._prepare_attach, attach=attach, filename=filename)
+
+        params = {}
+        if msg is not None:
+            params['caption'] = msg
+        if kwargs.get('disable_notification') is not None:
+            params['disable_notification'] = True
+
+        for chat_id in self._chat_ids:
+            params['chat_id'] = chat_id
+            await self._async_send_post(method_api=method_api, params=params, files=files)
 
     def send_attach(
             self,

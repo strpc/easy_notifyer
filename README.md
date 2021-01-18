@@ -39,10 +39,10 @@ def foo():
 
 
 ```python
-from easy_notifyer import async_telegram_reporter
+from easy_notifyer import telegram_reporter
 
 
-@async_telegram_reporter(
+@telegram_reporter(
     exceptions=OSError,        # can be tuple from exceptions
     as_attached=True,          # to send traceback as a file
     filename='bar_report.log'  # custom filename for attach
@@ -71,7 +71,7 @@ def foo():
 
 Can be using basic client:
 ```python
-from easy_notifyer import Telegram, TelegramAsync
+from easy_notifyer import Telegram
 
 
 def main():
@@ -84,10 +84,10 @@ def main():
     
 async def main_async():
     ...
-    telegram = TelegramAsync()
-    await telegram.send_message('async hello from easy notifyer')
+    telegram = Telegram()
+    await telegram.async_send_message('async hello from easy notifyer')
     img = open('my_image.jpg', 'rb')
-    await telegram.send_attach(img, filename='my_image.jpg')
+    await telegram.async_send_attach(img, filename='my_image.jpg')
 
 ```
 
