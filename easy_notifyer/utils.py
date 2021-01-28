@@ -79,7 +79,7 @@ def get_telegram_creds() -> Tuple[str, List[int]]:
     return token, chat_id
 
 
-async def run_sync(func: Callable, *args, **kwargs) -> Any:
+async def run_async(func: Callable, *args, **kwargs) -> Any:
     """
     Run sync func in async code in thread pool.
     Args:

@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from urllib import request
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from easy_notifyer.utils import MultiPartForm, run_sync
+from easy_notifyer.utils import MultiPartForm, run_async
 
 
 class RequestsBase:
@@ -63,7 +63,7 @@ class AsyncRequests:
             files: Optional[Dict] = None,
     ) -> 'Response':
         """Send async post request"""
-        return await run_sync(
+        return await run_async(
             self._client.post,
             url=url,
             headers=headers,

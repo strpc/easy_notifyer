@@ -6,7 +6,7 @@ from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 
 from easy_notifyer.clients import AsyncRequests, Requests, Response
 from easy_notifyer.env import Env
-from easy_notifyer.utils import get_telegram_creds, run_sync
+from easy_notifyer.utils import get_telegram_creds, run_async
 
 
 logger = logging.getLogger(__name__)
@@ -125,7 +125,7 @@ class Telegram(TelegramBase):
             body=body,
             files=files,
         )
-        await run_sync(self._response_handler, response)
+        await run_async(self._response_handler, response)
         return response
 
     def _send_post(
@@ -222,7 +222,7 @@ class Telegram(TelegramBase):
                 disable_notification(bool): True to disable notification of message.
         """
         method_api = 'sendDocument'
-        files = await run_sync(self._prepare_attach, attach=attach, filename=filename)
+        files = await run_async(self._prepare_attach, attach=attach, filename=filename)
 
         params = {}
         if msg is not None:
