@@ -9,6 +9,7 @@ from easy_notifyer.utils import MultiPartForm, run_async
 
 class RequestsBase:
     """Base requests obj"""
+
     @staticmethod
     def _add_params(url: str, params: Dict) -> str:
         url_parts = list(urlparse(url))
@@ -20,17 +21,18 @@ class RequestsBase:
 
 class Requests(RequestsBase):
     """Client for requests"""
+
     def __init__(self):
         self._client = request.Request
 
     def post(
-            self,
-            *,
-            url: str,
-            headers: Optional[Dict] = None,
-            params: Optional[Dict] = None,
-            body: Optional[Dict] = None,
-            files: Optional[Dict] = None,
+        self,
+        *,
+        url: str,
+        headers: Optional[Dict] = None,
+        params: Optional[Dict] = None,
+        body: Optional[Dict] = None,
+        files: Optional[Dict] = None,
     ) -> HTTPResponse:
         """Send post request"""
         data = None
@@ -49,17 +51,18 @@ class Requests(RequestsBase):
 
 class AsyncRequests:
     """Async client for requests"""
+
     def __init__(self):
         self._client = Requests()
 
     async def post(
-            self,
-            *,
-            url: str,
-            params: Optional[Dict] = None,
-            headers: Optional[Dict] = None,
-            body: Optional[Dict] = None,
-            files: Optional[Dict] = None,
+        self,
+        *,
+        url: str,
+        params: Optional[Dict] = None,
+        headers: Optional[Dict] = None,
+        body: Optional[Dict] = None,
+        files: Optional[Dict] = None,
     ) -> HTTPResponse:
         """Send async post request"""
         return await run_async(
@@ -68,5 +71,5 @@ class AsyncRequests:
             headers=headers,
             params=params,
             body=body,
-            files=files
+            files=files,
         )

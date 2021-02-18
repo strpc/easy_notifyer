@@ -22,26 +22,27 @@ class ITelegram(ABC):
 
     @abstractmethod
     def send_attach(
-            self,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
-            *,
-            msg: Optional[str] = None,
-            filename: Optional[str] = None,
-            **kwargs
+        self,
+        attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+        *,
+        msg: Optional[str] = None,
+        filename: Optional[str] = None,
+        **kwargs,
     ) -> Optional[bool]:
         ...
 
 
 class TelegramBase:
     """Base class of telegram"""
+
     API_BASE_URL = Env().EASY_NOTIFYER_TELEGRAM_API_URL
-    API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith('/') else API_BASE_URL
+    API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith("/") else API_BASE_URL
 
     def __init__(
-            self,
-            *,
-            token: Optional[str] = None,
-            chat_id: Optional[Union[int, List[int]]] = None,
+        self,
+        *,
+        token: Optional[str] = None,
+        chat_id: Optional[Union[int, List[int]]] = None,
     ):
         """
         Args:
@@ -58,14 +59,9 @@ class TelegramBase:
 
     @staticmethod
     def _prepare_attach(
-            *,
-            attach: Union[
-                bytes,
-                str,
-                BinaryIO,
-                Tuple[str, Union[BinaryIO, bytes]]
-            ],
-            filename: Optional[str] = None,
+        *,
+        attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+        filename: Optional[str] = None,
     ) -> Dict:
         """
         Preparation of attach for sending to telegram
@@ -78,23 +74,24 @@ class TelegramBase:
         filename = filename or uuid.uuid4().hex
         files = {}
         if isinstance(attach, tuple) is True:
-            files['document'] = attach
+            files["document"] = attach
         elif isinstance(attach, bytes) is True:
-            files['document'] = (filename, BytesIO(attach))
-        elif hasattr(attach, 'read') and isinstance(attach.read(0), bytes):
-            files['document'] = (filename, attach)
+            files["document"] = (filename, BytesIO(attach))
+        elif hasattr(attach, "read") and isinstance(attach.read(0), bytes):
+            files["document"] = (filename, attach)
         else:
-            files['document'] = (filename, BytesIO(attach.encode()))
+            files["document"] = (filename, BytesIO(attach.encode()))
         return files
 
 
 class TelegramAsync(ITelegram, TelegramBase):
     """Async client for telegram"""
+
     def __init__(
-            self,
-            *,
-            token: Optional[str] = None,
-            chat_id: Optional[Union[int, List[int]]] = None,
+        self,
+        *,
+        token: Optional[str] = None,
+        chat_id: Optional[Union[int, List[int]]] = None,
     ):
         """
         Args:
@@ -107,13 +104,13 @@ class TelegramAsync(ITelegram, TelegramBase):
         self._client = AsyncRequests()
 
     async def _send_post(
-            self,
-            *,
-            method_api: str,
-            headers: Optional[Dict] = None,
-            params: Optional[Dict] = None,
-            body: Optional[Dict] = None,
-            files: Optional[Dict] = None
+        self,
+        *,
+        method_api: str,
+        headers: Optional[Dict] = None,
+        params: Optional[Dict] = None,
+        body: Optional[Dict] = None,
+        files: Optional[Dict] = None,
     ):
         """
         Send async post request.
@@ -138,7 +135,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         except HTTPError as error:
             raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
         except Exception:
-            logger.error('Send message to telegram error. Response: %s', response.read())
+            logger.error("Send message to telegram error. Response: %s", response.read())
         return response
 
     async def send_message(self, msg: str, **kwargs) -> Optional[bool]:
@@ -150,27 +147,27 @@ class TelegramAsync(ITelegram, TelegramBase):
                 disable_notification(bool): True to disable notification of message.
                 disable_web_page_preview(bool): True to disable web preview for links.
         """
-        method_api = 'sendMessage'
+        method_api = "sendMessage"
 
         for chat_id in self._chat_ids:
             body = {
-                'chat_id': chat_id,
-                'text': msg,
+                "chat_id": chat_id,
+                "text": msg,
             }
-            if kwargs.get('disable_web_page_preview') is not None:
-                body['disable_web_page_preview'] = True
-            if kwargs.get('disable_notification') is not None:
-                body['disable_notification'] = True
+            if kwargs.get("disable_web_page_preview") is not None:
+                body["disable_web_page_preview"] = True
+            if kwargs.get("disable_notification") is not None:
+                body["disable_notification"] = True
             await self._send_post(method_api=method_api, body=body)
         return True
 
     async def send_attach(
-            self,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
-            *,
-            msg: Optional[str] = None,
-            filename: Optional[str] = None,
-            **kwargs
+        self,
+        attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+        *,
+        msg: Optional[str] = None,
+        filename: Optional[str] = None,
+        **kwargs,
     ) -> Optional[bool]:
         """
         Send file.
@@ -182,28 +179,29 @@ class TelegramAsync(ITelegram, TelegramBase):
             **kwargs:
                 disable_notification(bool): True to disable notification of message.
         """
-        method_api = 'sendDocument'
+        method_api = "sendDocument"
         files = await run_async(self._prepare_attach, attach=attach, filename=filename)
 
         params = {}
         if msg is not None:
-            params['caption'] = msg
-        if kwargs.get('disable_notification') is not None:
-            params['disable_notification'] = True
+            params["caption"] = msg
+        if kwargs.get("disable_notification") is not None:
+            params["disable_notification"] = True
 
         for chat_id in self._chat_ids:
-            params['chat_id'] = chat_id
+            params["chat_id"] = chat_id
             await self._send_post(method_api=method_api, params=params, files=files)
         return True
 
 
 class Telegram(ITelegram, TelegramBase):
     """Client of telegram"""
+
     def __init__(
-            self,
-            *,
-            token: Optional[str] = None,
-            chat_id: Optional[Union[int, List[int]]] = None,
+        self,
+        *,
+        token: Optional[str] = None,
+        chat_id: Optional[Union[int, List[int]]] = None,
     ):
         """
         Args:
@@ -216,13 +214,13 @@ class Telegram(ITelegram, TelegramBase):
         self._client = Requests()
 
     def _send_post(
-            self,
-            *,
-            method_api: str,
-            headers: Optional[Dict] = None,
-            params: Optional[Dict] = None,
-            body: Optional[Dict] = None,
-            files: Optional[Dict] = None,
+        self,
+        *,
+        method_api: str,
+        headers: Optional[Dict] = None,
+        params: Optional[Dict] = None,
+        body: Optional[Dict] = None,
+        files: Optional[Dict] = None,
     ):
         """
         Send post request.
@@ -242,12 +240,12 @@ class Telegram(ITelegram, TelegramBase):
                 headers=headers,
                 params=params,
                 body=body,
-                files=files
+                files=files,
             )
         except HTTPError as error:
             raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
         except Exception:
-            logger.error('Send message to telegram error. Response: %s', response.read())
+            logger.error("Send message to telegram error. Response: %s", response.read())
         return response
 
     def send_message(self, msg: str, **kwargs) -> True:
@@ -259,32 +257,27 @@ class Telegram(ITelegram, TelegramBase):
                 disable_notification(bool): True to disable notification of message.
                 disable_web_page_preview(bool): True to disable web preview for links.
         """
-        method_api = 'sendMessage'
+        method_api = "sendMessage"
 
         for chat_id in self._chat_ids:
             body = {
-                'chat_id': chat_id,
-                'text': msg,
+                "chat_id": chat_id,
+                "text": msg,
             }
-            if kwargs.get('disable_web_page_preview') is not None:
-                body['disable_web_page_preview'] = True
-            if kwargs.get('disable_notification') is not None:
-                body['disable_notification'] = True
+            if kwargs.get("disable_web_page_preview") is not None:
+                body["disable_web_page_preview"] = True
+            if kwargs.get("disable_notification") is not None:
+                body["disable_notification"] = True
             self._send_post(method_api=method_api, body=body)
         return True
 
     def send_attach(
-            self,
-            attach: Union[
-                bytes,
-                str,
-                BinaryIO,
-                Tuple[str, Union[BinaryIO, bytes]]
-            ],
-            *,
-            msg: Optional[str] = None,
-            filename: Optional[str] = None,
-            **kwargs
+        self,
+        attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+        *,
+        msg: Optional[str] = None,
+        filename: Optional[str] = None,
+        **kwargs,
     ) -> Optional[bool]:
         """
         Send file.
@@ -296,16 +289,16 @@ class Telegram(ITelegram, TelegramBase):
             **kwargs:
                 disable_notification(bool): True to disable notification of message.
         """
-        method_api = 'sendDocument'
+        method_api = "sendDocument"
         files = self._prepare_attach(attach=attach, filename=filename)
 
         params = {}
         if msg is not None:
-            params['caption'] = msg
-        if kwargs.get('disable_notification') is not None:
-            params['disable_notification'] = True
+            params["caption"] = msg
+        if kwargs.get("disable_notification") is not None:
+            params["disable_notification"] = True
 
         for chat_id in self._chat_ids:
-            params['chat_id'] = chat_id
+            params["chat_id"] = chat_id
             self._send_post(method_api=method_api, params=params, files=files)
         return True

@@ -8,12 +8,13 @@ from easy_notifyer.env import Env
 
 class Report:
     """Object for create report"""
+
     def __init__(
-            self,
-            tback: str,
-            func_name: Optional[str] = None,
-            header: Optional[str] = None,
-            as_attached: bool = False,
+        self,
+        tback: str,
+        func_name: Optional[str] = None,
+        header: Optional[str] = None,
+        as_attached: bool = False,
     ):
         self._tback = tback
         self._func_name = func_name
@@ -33,32 +34,32 @@ class Report:
         crash_time = datetime.now().replace(microsecond=0)
         report = [
             "Your program has crashed ☠️",
-            'Machine name: %s' % self._host_name,
-            'Crash date: %s' % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
+            "Machine name: %s" % self._host_name,
+            "Crash date: %s" % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
             "Traceback:",
-            '%s' % self._tback
+            "%s" % self._tback,
         ]
         if self._header is not None:
-            report[0] = '%s' % self._header
+            report[0] = "%s" % self._header
         if self._service_name is not None:
-            report.insert(1, 'Service: %s' % self._service_name)
+            report.insert(1, "Service: %s" % self._service_name)
         if self._func_name is not None:
-            report.insert(3, 'Main call: %s' % self._func_name)
-        self.report = '\n'.join(report)
+            report.insert(3, "Main call: %s" % self._func_name)
+        self.report = "\n".join(report)
 
     def _make_attach_report(self):
         """Formatting report with attach before sending."""
         crash_time = datetime.now().replace(microsecond=0)
         report = [
             "Your program has crashed ☠️",
-            'Machine name: %s' % self._host_name,
-            'Crash date: %s' % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT)
+            "Machine name: %s" % self._host_name,
+            "Crash date: %s" % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
         ]
         if self._header is not None:
-            report.insert(0, '%s' % self._header)
+            report.insert(0, "%s" % self._header)
         if self._service_name is not None:
-            report.insert(1, 'Service: %s' % self._service_name)
+            report.insert(1, "Service: %s" % self._service_name)
         if self._func_name is not None:
-            report.insert(2, 'Main call: %s' % self._func_name)
-        self.report = '\n'.join(report)
+            report.insert(2, "Main call: %s" % self._func_name)
+        self.report = "\n".join(report)
         self.attach = self._tback
