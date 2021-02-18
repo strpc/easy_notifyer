@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, Type, Union
 from easy_notifyer.env import Env
 from easy_notifyer.mailer import Mailer
 from easy_notifyer.report import Report
-from easy_notifyer.telegram import Telegram
+from easy_notifyer.telegram import Telegram, TelegramAsync
 from easy_notifyer.utils import run_async
 
 
@@ -178,17 +178,17 @@ async def _async_report_telegram_handler(
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
                 as_attached report.
     """
-    bot = Telegram(token=token, chat_id=chat_id)
+    bot = TelegramAsync(token=token, chat_id=chat_id)
     if report.attach is not None:
         filename = await run_async(_get_filename, kwargs.pop('filename', None))
-        await bot.async_send_attach(
+        await bot.send_attach(
             msg=report.report,
             attach=report.attach,
             filename=filename,
             **kwargs
         )
     else:
-        await bot.async_send_message(report.report, **kwargs)
+        await bot.send_message(report.report, **kwargs)
 
 
 def _report_mailer_handler(*, report: Report, **params):
