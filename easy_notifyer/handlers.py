@@ -12,17 +12,13 @@ from easy_notifyer.utils import run_async
 
 
 def telegram_reporter(
-        *,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[List[int], int]] = None,
-        exceptions: Optional[
-            Union[
-                Type[BaseException],
-                Tuple[Type[BaseException], ...]
-            ]] = None,
-        header: Optional[str] = None,
-        as_attached: bool = False,
-        **params
+    *,
+    token: Optional[str] = None,
+    chat_id: Optional[Union[List[int], int]] = None,
+    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+    header: Optional[str] = None,
+    as_attached: bool = False,
+    **params,
 ):
     """
     Handler errors for sending report in telegram.
@@ -75,16 +71,14 @@ def telegram_reporter(
                     as_attached=as_attached,
                 )
                 await _async_report_telegram_handler(
-                    report=report,
-                    token=token,
-                    chat_id=chat_id,
-                    **params
+                    report=report, token=token, chat_id=chat_id, **params
                 )
                 raise exc
 
         if asyncio.iscoroutinefunction(func):
             return functools.wraps(func)(async_wrapped_view)
         return functools.wraps(func)(sync_wrapped_view)
+
     return decorator
 
 
@@ -99,19 +93,19 @@ def _get_filename(filename: Optional[str] = None) -> str:
         string of filename.
     """
     if filename is None:
-        date = datetime.now().replace(microsecond=0).strftime(
-            Env().EASY_NOTIFYER_FILENAME_DT_FORMAT
+        date = (
+            datetime.now().replace(microsecond=0).strftime(Env().EASY_NOTIFYER_FILENAME_DT_FORMAT)
         )
         filename = f"{date}.txt"
     return filename
 
 
 def _report_maker(
-        *,
-        tback: str,
-        func_name: Optional[str] = None,
-        header: Optional[str] = None,
-        as_attached: bool = False,
+    *,
+    tback: str,
+    func_name: Optional[str] = None,
+    header: Optional[str] = None,
+    as_attached: bool = False,
 ) -> Report:
     """
     Make report from
@@ -127,11 +121,11 @@ def _report_maker(
 
 
 def _report_telegram_handler(
-        *,
-        report: Report,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[int, List[int]]] = None,
-        **kwargs
+    *,
+    report: Report,
+    token: Optional[str] = None,
+    chat_id: Optional[Union[int, List[int]]] = None,
+    **kwargs,
 ):
     """
     Send report.
@@ -149,18 +143,18 @@ def _report_telegram_handler(
     """
     bot = Telegram(token=token, chat_id=chat_id)
     if report.attach is not None:
-        filename = _get_filename(kwargs.pop('filename', None))
+        filename = _get_filename(kwargs.pop("filename", None))
         bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
     else:
         bot.send_message(report.report, **kwargs)
 
 
 async def _async_report_telegram_handler(
-        *,
-        report: Report,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[int, List[int]]] = None,
-        **kwargs
+    *,
+    report: Report,
+    token: Optional[str] = None,
+    chat_id: Optional[Union[int, List[int]]] = None,
+    **kwargs,
 ):
     """
     Send report.
@@ -180,39 +174,30 @@ async def _async_report_telegram_handler(
     """
     bot = TelegramAsync(token=token, chat_id=chat_id)
     if report.attach is not None:
-        filename = await run_async(_get_filename, kwargs.pop('filename', None))
-        await bot.send_attach(
-            msg=report.report,
-            attach=report.attach,
-            filename=filename,
-            **kwargs
-        )
+        filename = await run_async(_get_filename, kwargs.pop("filename", None))
+        await bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
     else:
         await bot.send_message(report.report, **kwargs)
 
 
 def _report_mailer_handler(*, report: Report, **params):
     to_send = {
-        'filename': _get_filename(params.pop('filename', None)),
-        'attach': report.attach,
-        'from_addr': params.pop('from_addr', None),
-        'to_addrs': params.pop('to_addrs', None),
-        'subject': params.pop('subject', None),
+        "filename": _get_filename(params.pop("filename", None)),
+        "attach": report.attach,
+        "from_addr": params.pop("from_addr", None),
+        "to_addrs": params.pop("to_addrs", None),
+        "subject": params.pop("subject", None),
     }
     with Mailer(**params) as mailer:
         mailer.send_message(message=report.report, **to_send)
 
 
 def mailer_reporter(
-        *,
-        exceptions: Optional[
-            Union[
-                Type[BaseException],
-                Tuple[Type[BaseException], ...]
-            ]] = None,
-        header: Optional[str] = None,
-        as_attached: bool = False,
-        **params
+    *,
+    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+    header: Optional[str] = None,
+    as_attached: bool = False,
+    **params,
 ):
     """
     Handler errors for sending report on email.
@@ -274,7 +259,9 @@ def mailer_reporter(
                 )
                 _report_mailer_handler(report=report, **params)
                 raise exc
+
         if asyncio.iscoroutinefunction(func) is True:
             return functools.wraps(func)(async_wrapper)
         return functools.wraps(func)(wrapper)
+
     return decorator
