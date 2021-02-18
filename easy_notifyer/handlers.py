@@ -8,14 +8,18 @@ from easy_notifyer.env import Env
 from easy_notifyer.mailer import Mailer
 from easy_notifyer.report import Report
 from easy_notifyer.telegram import Telegram, TelegramAsync
-from easy_notifyer.utils import run_sync
+from easy_notifyer.utils import run_async
 
 
 def telegram_reporter(
         *,
         token: Optional[str] = None,
         chat_id: Optional[Union[List[int], int]] = None,
-        exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+        exceptions: Optional[
+            Union[
+                Type[BaseException],
+                Tuple[Type[BaseException], ...]
+            ]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
         **params
@@ -43,7 +47,7 @@ def telegram_reporter(
 
     def decorator(func):
         func_name = func.__name__
-        
+
         def sync_wrapped_view(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
@@ -57,13 +61,13 @@ def telegram_reporter(
                 )
                 _report_telegram_handler(report=report, token=token, chat_id=chat_id, **params)
                 raise exc
-            
+
         async def async_wrapped_view(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except exceptions as exc:
                 tback = traceback.format_exc()
-                report = await run_sync(
+                report = await run_async(
                     _report_maker,
                     tback=tback,
                     func_name=func_name,
@@ -77,7 +81,7 @@ def telegram_reporter(
                     **params
                 )
                 raise exc
-        
+
         if asyncio.iscoroutinefunction(func):
             return functools.wraps(func)(async_wrapped_view)
         return functools.wraps(func)(sync_wrapped_view)
@@ -96,7 +100,7 @@ def _get_filename(filename: Optional[str] = None) -> str:
     """
     if filename is None:
         date = datetime.now().replace(microsecond=0).strftime(
-            Env.EASY_NOTIFYER_FILENAME_DT_FORMAT
+            Env().EASY_NOTIFYER_FILENAME_DT_FORMAT
         )
         filename = f"{date}.txt"
     return filename
@@ -176,8 +180,13 @@ async def _async_report_telegram_handler(
     """
     bot = TelegramAsync(token=token, chat_id=chat_id)
     if report.attach is not None:
-        filename = await run_sync(_get_filename, kwargs.pop('filename', None))
-        await bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
+        filename = await run_async(_get_filename, kwargs.pop('filename', None))
+        await bot.send_attach(
+            msg=report.report,
+            attach=report.attach,
+            filename=filename,
+            **kwargs
+        )
     else:
         await bot.send_message(report.report, **kwargs)
 
@@ -196,7 +205,11 @@ def _report_mailer_handler(*, report: Report, **params):
 
 def mailer_reporter(
         *,
-        exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+        exceptions: Optional[
+            Union[
+                Type[BaseException],
+                Tuple[Type[BaseException], ...]
+            ]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
         **params
@@ -232,20 +245,20 @@ def mailer_reporter(
 
     def decorator(func):
         func_name = func.__name__
-        
+
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except exceptions as exc:
                 tback = traceback.format_exc()
-                report = await run_sync(
+                report = await run_async(
                     _report_maker,
                     tback=tback,
                     func_name=func_name,
                     header=header,
                     as_attached=as_attached,
                 )
-                await run_sync(_report_mailer_handler, report=report, **params)
+                await run_async(_report_mailer_handler, report=report, **params)
                 raise exc
 
         def wrapper(*args, **kwargs):

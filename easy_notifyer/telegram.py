@@ -1,20 +1,40 @@
 # pylint: disable=too-few-public-methods
-import uuid
 import logging
+import uuid
+from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
+from urllib.error import HTTPError
 
-from easy_notifyer.clients import AsyncRequests, Requests, Response
+from easy_notifyer.clients import AsyncRequests, Requests
 from easy_notifyer.env import Env
-from easy_notifyer.utils import get_telegram_creds, run_sync
+from easy_notifyer.exceptions import ConfigError
+from easy_notifyer.utils import get_telegram_creds, run_async
 
 
 logger = logging.getLogger(__name__)
 
 
+class ITelegram(ABC):
+    @abstractmethod
+    def send_message(self, msg: str, **kwargs) -> Optional[bool]:
+        ...
+
+    @abstractmethod
+    def send_attach(
+            self,
+            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            *,
+            msg: Optional[str] = None,
+            filename: Optional[str] = None,
+            **kwargs
+    ) -> Optional[bool]:
+        ...
+
+
 class TelegramBase:
     """Base class of telegram"""
-    API_BASE_URL = Env.EASY_NOTIFYER_TELEGRAM_API_URL
+    API_BASE_URL = Env().EASY_NOTIFYER_TELEGRAM_API_URL
     API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith('/') else API_BASE_URL
 
     def __init__(
@@ -37,19 +57,14 @@ class TelegramBase:
         self._base_api_url = f"{self.API_BASE_URL}/bot{self._token}/"
 
     @staticmethod
-    def _response_handler(response: Response):
-        """
-        Handle response from telegram api. If status code != 200 - make report to stdout by logging.
-        Args:
-            response(Reponse): instanse of Response
-        """
-        if response.status_code != 200:
-            logger.error('Send message to telegram error. Response: %s', response.json())
-
-    @staticmethod
     def _prepare_attach(
             *,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            attach: Union[
+                bytes,
+                str,
+                BinaryIO,
+                Tuple[str, Union[BinaryIO, bytes]]
+            ],
             filename: Optional[str] = None,
     ) -> Dict:
         """
@@ -73,7 +88,7 @@ class TelegramBase:
         return files
 
 
-class TelegramAsync(TelegramBase):
+class TelegramAsync(ITelegram, TelegramBase):
     """Async client for telegram"""
     def __init__(
             self,
@@ -95,34 +110,38 @@ class TelegramAsync(TelegramBase):
             self,
             *,
             method_api: str,
+            headers: Optional[Dict] = None,
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
-            data: Optional[Dict] = None,
             files: Optional[Dict] = None
-    ) -> Response:
+    ):
         """
         Send async post request.
         Args:
             method_api(str): method of api telegram
+            headers(dict, optional): headers for of request.
             params(dict, optional): params of request.
             body(dict, optional): body of request.
-            data(dict, optional): data of request.
             files(dict, optional): files of request in format ('filename.txt', b'filedata').
 
         Returns:
             instance of Response.
         """
-        response = await self._client.post(
-            url=self._base_api_url + method_api,
-            params=params,
-            body=body,
-            data=data,
-            files=files,
-        )
-        await run_sync(self._response_handler, response)
+        try:
+            response = await self._client.post(
+                url=self._base_api_url + method_api,
+                headers=headers,
+                params=params,
+                body=body,
+                files=files,
+            )
+        except HTTPError as error:
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
+        except Exception:
+            logger.error('Send message to telegram error. Response: %s', response.read())
         return response
 
-    async def send_message(self, msg: str, **kwargs):
+    async def send_message(self, msg: str, **kwargs) -> Optional[bool]:
         """
         Send message.
         Args:
@@ -143,6 +162,7 @@ class TelegramAsync(TelegramBase):
             if kwargs.get('disable_notification') is not None:
                 body['disable_notification'] = True
             await self._send_post(method_api=method_api, body=body)
+        return True
 
     async def send_attach(
             self,
@@ -151,7 +171,7 @@ class TelegramAsync(TelegramBase):
             msg: Optional[str] = None,
             filename: Optional[str] = None,
             **kwargs
-    ):
+    ) -> Optional[bool]:
         """
         Send file.
         Args:
@@ -163,7 +183,7 @@ class TelegramAsync(TelegramBase):
                 disable_notification(bool): True to disable notification of message.
         """
         method_api = 'sendDocument'
-        files = await run_sync(self._prepare_attach, attach=attach, filename=filename)
+        files = await run_async(self._prepare_attach, attach=attach, filename=filename)
 
         params = {}
         if msg is not None:
@@ -174,9 +194,10 @@ class TelegramAsync(TelegramBase):
         for chat_id in self._chat_ids:
             params['chat_id'] = chat_id
             await self._send_post(method_api=method_api, params=params, files=files)
+        return True
 
 
-class Telegram(TelegramBase):
+class Telegram(ITelegram, TelegramBase):
     """Client of telegram"""
     def __init__(
             self,
@@ -198,34 +219,38 @@ class Telegram(TelegramBase):
             self,
             *,
             method_api: str,
+            headers: Optional[Dict] = None,
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
-            data: Optional[Dict] = None,
             files: Optional[Dict] = None,
-    ) -> Response:
+    ):
         """
         Send post request.
         Args:
             method_api(str): method of api telegram
+            headers(dict, optional): headers for of request.
             params(dict, optional): params of request.
             body(dict, optional): body of request.
-            data(dict, optional): data of request.
             files(dict, optional): files of request in format ('filename.txt', b'filedata').
 
         Returns:
             instance of Response.
         """
-        response = self._client.post(
-            url=self._base_api_url + method_api,
-            params=params,
-            body=body,
-            data=data,
-            files=files
-        )
-        self._response_handler(response)
+        try:
+            response = self._client.post(
+                url=self._base_api_url + method_api,
+                headers=headers,
+                params=params,
+                body=body,
+                files=files
+            )
+        except HTTPError as error:
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
+        except Exception:
+            logger.error('Send message to telegram error. Response: %s', response.read())
         return response
 
-    def send_message(self, msg: str, **kwargs):
+    def send_message(self, msg: str, **kwargs) -> True:
         """
         Send message.
         Args:
@@ -246,15 +271,21 @@ class Telegram(TelegramBase):
             if kwargs.get('disable_notification') is not None:
                 body['disable_notification'] = True
             self._send_post(method_api=method_api, body=body)
+        return True
 
     def send_attach(
             self,
-            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            attach: Union[
+                bytes,
+                str,
+                BinaryIO,
+                Tuple[str, Union[BinaryIO, bytes]]
+            ],
             *,
             msg: Optional[str] = None,
             filename: Optional[str] = None,
             **kwargs
-    ):
+    ) -> Optional[bool]:
         """
         Send file.
         Args:
@@ -277,3 +308,4 @@ class Telegram(TelegramBase):
         for chat_id in self._chat_ids:
             params['chat_id'] = chat_id
             self._send_post(method_api=method_api, params=params, files=files)
+        return True

@@ -6,6 +6,7 @@ from smtplib import SMTP, SMTP_SSL
 from typing import BinaryIO, List, Optional, Union
 
 from easy_notifyer.env import Env
+from easy_notifyer.exceptions import ConfigError
 
 
 class Mailer:
@@ -32,16 +33,16 @@ class Mailer:
             ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
                 EASY_NOTIFYER_MAILER_SSL
         """
-        self._host = host or Env.EASY_NOTIFYER_MAILER_HOST
-        self._port = port or Env.EASY_NOTIFYER_MAILER_PORT
-        self._login = login or Env.EASY_NOTIFYER_MAILER_LOGIN
-        self._password = password or Env.EASY_NOTIFYER_MAILER_PASSWORD
-        self._ssl = ssl or Env.EASY_NOTIFYER_MAILER_SSL
+        env = Env()
+        self._host = host or env.EASY_NOTIFYER_MAILER_HOST
+        self._port = port or env.EASY_NOTIFYER_MAILER_PORT
+        self._login = login or env.EASY_NOTIFYER_MAILER_LOGIN
+        self._password = password or env.EASY_NOTIFYER_MAILER_PASSWORD
+        self._ssl = ssl or env.EASY_NOTIFYER_MAILER_SSL
         self._connection: Optional[SMTP_SSL, SMTP] = None
 
         if not all([self._host, self._port]):
-            raise EnvironmentError(f"Host or port smtp server is not found. host={self._host}, "
-                                   f"port={self._port}")
+            raise ConfigError(host=self._host, port=self._port)
 
     def __enter__(self):
         self.connect()
@@ -125,8 +126,8 @@ class Mailer:
             attach(bytes, str, tuple, optional): file to send.
             filename(str, optional): filename for attached file.
         """
-        from_addr = from_addr or Env.EASY_NOTIFYER_MAILER_FROM
-        to_addrs = to_addrs or Env.EASY_NOTIFYER_MAILER_TO
+        from_addr = from_addr or Env().EASY_NOTIFYER_MAILER_FROM
+        to_addrs = to_addrs or Env().EASY_NOTIFYER_MAILER_TO
         if from_addr is None or to_addrs is None:
             raise EnvironmentError(f'from_addr or to_addrs is uncorrect. from_addr={from_addr}'
                                    f'to_addrts={to_addrs}')

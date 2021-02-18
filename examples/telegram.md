@@ -11,7 +11,7 @@ def foo():
 ```python
 import os
 
-from easy_notifyer import TelegramAsync, telegram_reporter
+from easy_notifyer import Telegram, telegram_reporter
 
 # set token and chat_id as environment variables.
 os.environ.setdefault('EASY_NOTIFYER_TELEGRAM_TOKEN', "123456789:QweRtyuWErtyZxcdsG")
@@ -41,8 +41,8 @@ def www():
     raise AttributeError
 
 async def easy_bot():
-    bot = TelegramAsync()
-    bot.send_message('hello world')
+    bot = Telegram()
+    await bot.async_send_message('hello world')
 ```
 
 ```python

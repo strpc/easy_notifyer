@@ -4,9 +4,19 @@ from itertools import chain
 from setuptools import setup, find_packages
 
 
+NAME_PACKAGE = 'easy_notifyer'
+DESCRIPTION = 'Easy bug reporter for small projects. ' \
+              'Zero dependencies - download and run. Asyncio support.'
 EXTRAS = {
-    'telegram': ['httpx'],
-    'dev': ['pytest', 'pylint', 'flake8', 'isort']
+    'dev': [
+        'pytest',
+        'pytest-mock',
+        'pytest-asyncio',
+        'pylint',
+        'flake8',
+        'isort',
+        'bumpversion',
+    ]
 }
 
 
@@ -15,12 +25,12 @@ def read(filename: str):
     return open(os.path.join(os.path.dirname(__file__), filename)).read().strip()
 
 
-def read_version():
+def read_version() -> str:
     """Read version from __init__.py"""
     regexp = re.compile(r"^__version__\W*=\W*'([\d.abrc]+)'")
     init_py = os.path.join(
         os.path.dirname(__file__),
-        'easy_notifyer',
+        NAME_PACKAGE,
         '__init__.py'
     )
     with open(init_py) as file:
@@ -28,22 +38,20 @@ def read_version():
             match = regexp.match(line)
             if match is not None:
                 return match.group(1)
-        raise RuntimeError('Cannot find version in easy_notifyer/__init__.py')
+        raise RuntimeError(f'Cannot find version in {NAME_PACKAGE}/__init__.py')
 
 
 setup(
-    name='easy_notifyer',
+    name=NAME_PACKAGE,
     version=read_version(),
-    description='Easy bug reporter for small projects or Sentry on minimums. Async support.',
+    description=DESCRIPTION,
     author='strpc',
     url='https://github.com/strpc/easy_notifyer',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
     download_url='https://pypi.python.org/pypi/easy-notifyer',
-    packages=find_packages(include=['easy_notifyer']),
-    install_requires=EXTRAS['telegram'],
+    packages=find_packages(include=[NAME_PACKAGE]),
     extras_require={
-        'telegram': EXTRAS['telegram'],
         'dev': EXTRAS['dev'],
         'all': list(chain.from_iterable(EXTRAS.values())),
     },
