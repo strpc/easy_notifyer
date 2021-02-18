@@ -4,6 +4,7 @@ import uuid
 from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
+from urllib.error import HTTPError
 
 from easy_notifyer.clients import AsyncRequests, Requests, Response
 from easy_notifyer.env import Env
