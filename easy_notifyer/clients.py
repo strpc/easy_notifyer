@@ -31,7 +31,7 @@ class Requests(RequestsBase):
             params: Optional[Dict] = None,
             body: Optional[Dict] = None,
             files: Optional[Dict] = None,
-    ) -> 'Response':
+    ) -> HTTPResponse:
         """Send post request"""
         data = None
         headers = headers or {}
@@ -43,9 +43,8 @@ class Requests(RequestsBase):
             headers = {**headers, **form.header}
 
         req = self._client(url=url, headers=headers, data=data)
-        resp: HTTPResponse = request.urlopen(req)
-        response = Response(status_code=resp.status, body=resp.read())
-        return response
+        resp = request.urlopen(req)
+        return resp
 
 
 class AsyncRequests:
@@ -61,7 +60,7 @@ class AsyncRequests:
             headers: Optional[Dict] = None,
             body: Optional[Dict] = None,
             files: Optional[Dict] = None,
-    ) -> 'Response':
+    ) -> HTTPResponse:
         """Send async post request"""
         return await run_async(
             self._client.post,
@@ -71,14 +70,3 @@ class AsyncRequests:
             body=body,
             files=files
         )
-
-
-class Response:
-    """Object of response"""
-    def __init__(self, status_code: int, body: bytes):
-        self.status_code = status_code
-        self._body = body
-
-    def json(self) -> str:
-        """Return of decoded body response"""
-        return self._body.decode()
