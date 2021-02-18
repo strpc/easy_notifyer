@@ -1,6 +1,7 @@
 # pylint: disable=too-few-public-methods
 import logging
 import uuid
+from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 
@@ -11,6 +12,23 @@ from easy_notifyer.utils import get_telegram_creds, run_async
 
 
 logger = logging.getLogger(__name__)
+
+
+class ITelegram(ABC):
+    @abstractmethod
+    def send_message(self, msg: str, **kwargs) -> Optional[bool]:
+        ...
+
+    @abstractmethod
+    def send_attach(
+            self,
+            attach: Union[bytes, str, BinaryIO, Tuple[str, Union[BinaryIO, bytes]]],
+            *,
+            msg: Optional[str] = None,
+            filename: Optional[str] = None,
+            **kwargs
+    ) -> Optional[bool]:
+        ...
 
 
 class TelegramBase:
