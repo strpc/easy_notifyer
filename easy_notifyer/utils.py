@@ -52,6 +52,7 @@ class MultiPartForm:
                 body.append(self._attached_file(fieldname, filename).encode('utf-8'))
                 body.append(b'')
                 if hasattr(data, 'read') is True:
+                    data.seek(0)
                     body.append(data.read())
                 elif hasattr(data, 'encode') is True:
                     body.append(data.encode('utf-8'))
