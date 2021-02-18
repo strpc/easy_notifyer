@@ -136,7 +136,7 @@ class TelegramAsync(ITelegram, TelegramBase):
                 files=files,
             )
         except HTTPError as error:
-            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error)
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
         except Exception:
             logger.error('Send message to telegram error. Response: %s', response.read())
         return response
@@ -245,7 +245,7 @@ class Telegram(ITelegram, TelegramBase):
                 files=files
             )
         except HTTPError as error:
-            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error)
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
         except Exception:
             logger.error('Send message to telegram error. Response: %s', response.read())
         return response
