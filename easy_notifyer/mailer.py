@@ -126,8 +126,8 @@ class Mailer:
             attach(bytes, str, tuple, optional): file to send.
             filename(str, optional): filename for attached file.
         """
-        from_addr = from_addr or Env.EASY_NOTIFYER_MAILER_FROM
-        to_addrs = to_addrs or Env.EASY_NOTIFYER_MAILER_TO
+        from_addr = from_addr or Env().EASY_NOTIFYER_MAILER_FROM
+        to_addrs = to_addrs or Env().EASY_NOTIFYER_MAILER_TO
         if from_addr is None or to_addrs is None:
             raise EnvironmentError(f'from_addr or to_addrs is uncorrect. from_addr={from_addr}'
                                    f'to_addrts={to_addrs}')
