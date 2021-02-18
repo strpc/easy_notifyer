@@ -4,7 +4,7 @@ from easy_notifyer.mailer import Mailer
 from easy_notifyer.telegram import Telegram, TelegramAsync
 
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 __all__ = [
