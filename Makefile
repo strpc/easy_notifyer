@@ -27,6 +27,7 @@ clean:
 	@rm -rf build
 	@rm -rf *.egg-info
 	@rm -rf cover
+	@rm -rf .pytest_cache
 	@rm -rf .tox
 	@rm -f .develop
 	@rm -f .flake
