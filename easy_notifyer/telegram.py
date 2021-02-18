@@ -6,6 +6,7 @@ from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 
 from easy_notifyer.clients import AsyncRequests, Requests, Response
 from easy_notifyer.env import Env
+from easy_notifyer.exceptions import ConfigError
 from easy_notifyer.utils import get_telegram_creds, run_async
 
 
@@ -118,14 +119,18 @@ class Telegram(TelegramBase):
         Returns:
             instance of Response.
         """
-        response = await self._async_client.post(
-            url=self._base_api_url + method_api,
-            headers=headers,
-            params=params,
-            body=body,
-            files=files,
-        )
-        await run_async(self._response_handler, response)
+        try:
+            response = await self._client.post(
+                url=self._base_api_url + method_api,
+                headers=headers,
+                params=params,
+                body=body,
+                files=files,
+            )
+        except HTTPError as error:
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error)
+        except Exception:
+            logger.error('Send message to telegram error. Response: %s', response.read())
         return response
 
     def _send_post(
@@ -149,14 +154,18 @@ class Telegram(TelegramBase):
         Returns:
             instance of Response.
         """
-        response = self._client.post(
-            url=self._base_api_url + method_api,
-            headers=headers,
-            params=params,
-            body=body,
-            files=files
-        )
-        self._response_handler(response)
+        try:
+            response = self._client.post(
+                url=self._base_api_url + method_api,
+                headers=headers,
+                params=params,
+                body=body,
+                files=files
+            )
+        except HTTPError as error:
+            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error)
+        except Exception:
+            logger.error('Send message to telegram error. Response: %s', response.read())
         return response
 
     async def async_send_message(self, msg: str, **kwargs):

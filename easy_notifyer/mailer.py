@@ -6,6 +6,7 @@ from smtplib import SMTP, SMTP_SSL
 from typing import BinaryIO, List, Optional, Union
 
 from easy_notifyer.env import Env
+from easy_notifyer.exceptions import ConfigError
 
 
 class Mailer:
@@ -41,8 +42,7 @@ class Mailer:
         self._connection: Optional[SMTP_SSL, SMTP] = None
 
         if not all([self._host, self._port]):
-            raise EnvironmentError(f"Host or port smtp server is not found. host={self._host}, "
-                                   f"port={self._port}")
+            raise ConfigError(host=self._host, port=self._port)
 
     def __enter__(self):
         self.connect()
