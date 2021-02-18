@@ -6,7 +6,7 @@ from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 from urllib.error import HTTPError
 
-from easy_notifyer.clients import AsyncRequests, Requests, Response
+from easy_notifyer.clients import AsyncRequests, Requests
 from easy_notifyer.env import Env
 from easy_notifyer.exceptions import ConfigError
 from easy_notifyer.utils import get_telegram_creds, run_async
@@ -55,16 +55,6 @@ class TelegramBase:
         self._token = token
         self._chat_ids = [chat_id] if isinstance(chat_id, int) else chat_id
         self._base_api_url = f"{self.API_BASE_URL}/bot{self._token}/"
-
-    @staticmethod
-    def _response_handler(response: Response):
-        """
-        Handle response from telegram api. If status code != 200 - make report to stdout by logging.
-        Args:
-            response(Reponse): instanse of Response
-        """
-        if response.status_code != 200:
-            logger.error('Send message to telegram error. Response: %s', response.json())
 
     @staticmethod
     def _prepare_attach(
