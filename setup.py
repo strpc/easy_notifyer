@@ -16,6 +16,7 @@ EXTRAS = {
         'flake8',
         'isort',
         'bumpversion',
+        'black',
     ]
 }
 
