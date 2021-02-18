@@ -285,7 +285,7 @@ class Telegram(ITelegram, TelegramBase):
             msg: Optional[str] = None,
             filename: Optional[str] = None,
             **kwargs
-    ):
+    ) -> Optional[bool]:
         """
         Send file.
         Args:
@@ -308,3 +308,4 @@ class Telegram(ITelegram, TelegramBase):
         for chat_id in self._chat_ids:
             params['chat_id'] = chat_id
             self._send_post(method_api=method_api, params=params, files=files)
+        return True
