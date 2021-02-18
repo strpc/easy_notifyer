@@ -65,10 +65,11 @@ def get_telegram_creds() -> Tuple[str, List[int]]:
     Returns:
         Tuple[token(str), List[chat_id(int), ...]]
     """
-    token = Env.EASY_NOTIFYER_TELEGRAM_TOKEN
-    chat_id = Env.EASY_NOTIFYER_TELEGRAM_CHAT_ID
-    error = EnvironmentError(f"Telegram token or chat_id is not found. token={token}, "
-                             f"chat_id={chat_id}")
+    token = Env().EASY_NOTIFYER_TELEGRAM_TOKEN
+    chat_id = Env().EASY_NOTIFYER_TELEGRAM_CHAT_ID
+
+    error = ConfigError(token=token, chat_id=chat_id)
+
     if token is None or chat_id is None:
         raise error
     try:

@@ -100,7 +100,7 @@ def _get_filename(filename: Optional[str] = None) -> str:
     """
     if filename is None:
         date = datetime.now().replace(microsecond=0).strftime(
-            Env.EASY_NOTIFYER_FILENAME_DT_FORMAT
+            Env().EASY_NOTIFYER_FILENAME_DT_FORMAT
         )
         filename = f"{date}.txt"
     return filename

@@ -32,11 +32,12 @@ class Mailer:
             ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
                 EASY_NOTIFYER_MAILER_SSL
         """
-        self._host = host or Env.EASY_NOTIFYER_MAILER_HOST
-        self._port = port or Env.EASY_NOTIFYER_MAILER_PORT
-        self._login = login or Env.EASY_NOTIFYER_MAILER_LOGIN
-        self._password = password or Env.EASY_NOTIFYER_MAILER_PASSWORD
-        self._ssl = ssl or Env.EASY_NOTIFYER_MAILER_SSL
+        env = Env()
+        self._host = host or env.EASY_NOTIFYER_MAILER_HOST
+        self._port = port or env.EASY_NOTIFYER_MAILER_PORT
+        self._login = login or env.EASY_NOTIFYER_MAILER_LOGIN
+        self._password = password or env.EASY_NOTIFYER_MAILER_PASSWORD
+        self._ssl = ssl or env.EASY_NOTIFYER_MAILER_SSL
         self._connection: Optional[SMTP_SSL, SMTP] = None
 
         if not all([self._host, self._port]):

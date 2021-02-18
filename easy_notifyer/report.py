@@ -19,7 +19,7 @@ class Report:
         self._func_name = func_name
         self._header = header
         self._host_name = gethostname()
-        self._service_name = Env.EASY_NOTIFYER_SERVICE_NAME
+        self._service_name = Env().EASY_NOTIFYER_SERVICE_NAME
         self._as_attached = as_attached
         self.report = None
         self.attach = None
@@ -34,7 +34,7 @@ class Report:
         report = [
             "Your program has crashed ☠️",
             'Machine name: %s' % self._host_name,
-            'Crash date: %s' % crash_time.strftime(Env.EASY_NOTIFYER_DATE_FORMAT),
+            'Crash date: %s' % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
             "Traceback:",
             '%s' % self._tback
         ]
@@ -52,7 +52,7 @@ class Report:
         report = [
             "Your program has crashed ☠️",
             'Machine name: %s' % self._host_name,
-            'Crash date: %s' % crash_time.strftime(Env.EASY_NOTIFYER_DATE_FORMAT)
+            'Crash date: %s' % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT)
         ]
         if self._header is not None:
             report.insert(0, '%s' % self._header)

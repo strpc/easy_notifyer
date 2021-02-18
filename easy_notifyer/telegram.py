@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class TelegramBase:
     """Base class of telegram"""
-    API_BASE_URL = Env.EASY_NOTIFYER_TELEGRAM_API_URL
+    API_BASE_URL = Env().EASY_NOTIFYER_TELEGRAM_API_URL
     API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith('/') else API_BASE_URL
 
     def __init__(
