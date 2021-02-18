@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 from easy_notifyer.env import Env
+from easy_notifyer.exceptions import ConfigError
 
 
 class MultiPartForm:
