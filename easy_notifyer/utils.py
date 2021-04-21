@@ -7,6 +7,12 @@ from easy_notifyer.env import Env
 from easy_notifyer.exceptions import ConfigError
 
 
+try:
+    import contextvars  # Python 3.7+
+except ImportError:
+    contextvars = None
+
+
 class MultiPartForm:
     """Creating body of request"""
 
@@ -94,4 +100,11 @@ async def run_async(func: Callable, *args, **kwargs) -> Any:
         same as func
     """
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, functools.partial(func, *args, **kwargs))
+    if contextvars is not None:
+        child = functools.partial(func, *args, **kwargs)
+        context = contextvars.copy_context()
+        func = context.run
+        args = (child,)
+    elif kwargs:
+        func = functools.partial(func, **kwargs)
+    return await loop.run_in_executor(None, func, *args)
