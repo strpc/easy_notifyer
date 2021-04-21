@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from urllib import request
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from easy_notifyer.utils import MultiPartForm, run_async
+from easy_notifyer.utils import MultiPartForm, run_in_threadpool
 
 
 class RequestsBase:
@@ -65,7 +65,7 @@ class AsyncRequests:
         files: Optional[Dict] = None,
     ) -> HTTPResponse:
         """Send async post request"""
-        return await run_async(
+        return await run_in_threadpool(
             self._client.post,
             url=url,
             headers=headers,

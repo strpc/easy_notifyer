@@ -9,7 +9,7 @@ from urllib.error import HTTPError
 from easy_notifyer.clients import AsyncRequests, Requests
 from easy_notifyer.env import Env
 from easy_notifyer.exceptions import ConfigError
-from easy_notifyer.utils import get_telegram_creds, run_async
+from easy_notifyer.utils import get_telegram_creds, run_in_threadpool
 
 
 logger = logging.getLogger(__name__)
@@ -180,7 +180,7 @@ class TelegramAsync(ITelegram, TelegramBase):
                 disable_notification(bool): True to disable notification of message.
         """
         method_api = "sendDocument"
-        files = await run_async(self._prepare_attach, attach=attach, filename=filename)
+        files = await run_in_threadpool(self._prepare_attach, attach=attach, filename=filename)
 
         params = {}
         if msg is not None:

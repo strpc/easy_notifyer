@@ -8,7 +8,7 @@ from easy_notifyer.env import Env
 from easy_notifyer.mailer import Mailer
 from easy_notifyer.report import Report
 from easy_notifyer.telegram import Telegram, TelegramAsync
-from easy_notifyer.utils import run_async
+from easy_notifyer.utils import run_in_threadpool
 
 
 def telegram_reporter(
@@ -63,7 +63,7 @@ def telegram_reporter(
                 return await func(*args, **kwargs)
             except exceptions as exc:
                 tback = traceback.format_exc()
-                report = await run_async(
+                report = await run_in_threadpool(
                     _report_maker,
                     tback=tback,
                     func_name=func_name,
@@ -174,7 +174,7 @@ async def _async_report_telegram_handler(
     """
     bot = TelegramAsync(token=token, chat_id=chat_id)
     if report.attach is not None:
-        filename = await run_async(_get_filename, kwargs.pop("filename", None))
+        filename = await run_in_threadpool(_get_filename, kwargs.pop("filename", None))
         await bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
     else:
         await bot.send_message(report.report, **kwargs)
@@ -236,14 +236,14 @@ def mailer_reporter(
                 return await func(*args, **kwargs)
             except exceptions as exc:
                 tback = traceback.format_exc()
-                report = await run_async(
+                report = await run_in_threadpool(
                     _report_maker,
                     tback=tback,
                     func_name=func_name,
                     header=header,
                     as_attached=as_attached,
                 )
-                await run_async(_report_mailer_handler, report=report, **params)
+                await run_in_threadpool(_report_mailer_handler, report=report, **params)
                 raise exc
 
         def wrapper(*args, **kwargs):
