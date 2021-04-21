@@ -7,6 +7,12 @@ from easy_notifyer.env import Env
 from easy_notifyer.exceptions import ConfigError
 
 
+try:
+    import contextvars  # Python 3.7+
+except ImportError:
+    contextvars = None
+
+
 class MultiPartForm:
     """Creating body of request"""
 
@@ -83,7 +89,7 @@ def get_telegram_creds() -> Tuple[str, List[int]]:
     return token, chat_id
 
 
-async def run_async(func: Callable, *args, **kwargs) -> Any:
+async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
     """
     Run sync func in async code in thread pool.
     Args:
@@ -94,4 +100,11 @@ async def run_async(func: Callable, *args, **kwargs) -> Any:
         same as func
     """
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, functools.partial(func, *args, **kwargs))
+    if contextvars is not None:
+        child = functools.partial(func, *args, **kwargs)
+        context = contextvars.copy_context()
+        func = context.run
+        args = (child,)
+    elif kwargs:
+        func = functools.partial(func, **kwargs)
+    return await loop.run_in_executor(None, func, *args)
