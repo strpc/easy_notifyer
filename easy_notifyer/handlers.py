@@ -1,21 +1,22 @@
 import asyncio
 import functools
 import traceback
-from datetime import datetime
 from typing import List, Optional, Tuple, Type, Union
 
-from easy_notifyer.env import Env
+from easy_notifyer.config import get_config
 from easy_notifyer.mailer import Mailer
 from easy_notifyer.report import Report
 from easy_notifyer.telegram import Telegram, TelegramAsync
-from easy_notifyer.utils import run_in_threadpool
+from easy_notifyer.utils import generate_filename, run_in_threadpool
 
 
 def telegram_reporter(
     *,
     token: Optional[str] = None,
     chat_id: Optional[Union[List[int], int]] = None,
-    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+    api_url: Optional[str] = None,
+    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException],
+                                                          ...]]] = None,
     header: Optional[str] = None,
     as_attached: bool = False,
     **params,
@@ -27,6 +28,7 @@ def telegram_reporter(
             `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
         chat_id(int, list, optional): Chat ids for send message. Can be use from environment
             variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+        api_url(str): #! TODO
         exceptions(exception, tuple(exception), optional): Exceptions for handle. Two and more - in
             tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
@@ -55,7 +57,11 @@ def telegram_reporter(
                     header=header,
                     as_attached=as_attached,
                 )
-                _report_telegram_handler(report=report, token=token, chat_id=chat_id, **params)
+                _report_telegram_handler(report=report,
+                                         token=token,
+                                         chat_id=chat_id,
+                                         api_url=api_url,
+                                         **params)
                 raise exc
 
         async def async_wrapped_view(*args, **kwargs):
@@ -70,9 +76,11 @@ def telegram_reporter(
                     header=header,
                     as_attached=as_attached,
                 )
-                await _async_report_telegram_handler(
-                    report=report, token=token, chat_id=chat_id, **params
-                )
+                await _async_report_telegram_handler(report=report,
+                                                     token=token,
+                                                     chat_id=chat_id,
+                                                     api_url=api_url,
+                                                     **params)
                 raise exc
 
         if asyncio.iscoroutinefunction(func):
@@ -80,24 +88,6 @@ def telegram_reporter(
         return functools.wraps(func)(sync_wrapped_view)
 
     return decorator
-
-
-def _get_filename(filename: Optional[str] = None) -> str:
-    """
-    Generate of filename for sending report as a file.
-    Args:
-        filename(str, optional): filename, if exists. Else - "{datetime}.txt". Format of datetime
-            can be set in environment variable `EASY_NOTIFYER_FILENAME_DT_FORMAT`.
-            Default - "%Y-%m-%d %H_%M_%S"
-    Returns:
-        string of filename.
-    """
-    if filename is None:
-        date = (
-            datetime.now().replace(microsecond=0).strftime(Env().EASY_NOTIFYER_FILENAME_DT_FORMAT)
-        )
-        filename = f"{date}.txt"
-    return filename
 
 
 def _report_maker(
@@ -125,6 +115,7 @@ def _report_telegram_handler(
     report: Report,
     token: Optional[str] = None,
     chat_id: Optional[Union[int, List[int]]] = None,
+    api_url: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -141,10 +132,18 @@ def _report_telegram_handler(
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
                 as_attached report.
     """
-    bot = Telegram(token=token, chat_id=chat_id)
+    config = get_config()
+    token = token or config.telegram.token
+    chat_id = chat_id or config.telegram.chat_id
+    api_url = api_url or config.telegram.api_url
+    bot = Telegram(token=token, chat_id=chat_id, api_url=api_url)
     if report.attach is not None:
-        filename = _get_filename(kwargs.pop("filename", None))
-        bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
+        filename = kwargs.pop("filename", None) or generate_filename(
+            config.report.filename_dt_format)
+        bot.send_attach(msg=report.report,
+                        attach=report.attach,
+                        filename=filename,
+                        **kwargs)
     else:
         bot.send_message(report.report, **kwargs)
 
@@ -154,6 +153,7 @@ async def _async_report_telegram_handler(
     report: Report,
     token: Optional[str] = None,
     chat_id: Optional[Union[int, List[int]]] = None,
+    api_url: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -172,21 +172,37 @@ async def _async_report_telegram_handler(
             disable_web_page_preview(bool): True to disable web preview for links. Not worked for
                 as_attached report.
     """
-    bot = TelegramAsync(token=token, chat_id=chat_id)
+    config = get_config()
+    token = token or config.telegram.token
+    chat_id = chat_id or config.telegram.chat_id
+    api_url = api_url or config.telegram.api_url
+
+    bot = TelegramAsync(token=token, chat_id=chat_id, api_url=api_url)
     if report.attach is not None:
-        filename = await run_in_threadpool(_get_filename, kwargs.pop("filename", None))
-        await bot.send_attach(msg=report.report, attach=report.attach, filename=filename, **kwargs)
+        filename = kwargs.pop("filename") or generate_filename(
+            config.report.filename_dt_format)
+        await bot.send_attach(msg=report.report,
+                              attach=report.attach,
+                              filename=filename,
+                              **kwargs)
     else:
         await bot.send_message(report.report, **kwargs)
 
 
 def _report_mailer_handler(*, report: Report, **params):
+    config = get_config()
     to_send = {
-        "filename": _get_filename(params.pop("filename", None)),
-        "attach": report.attach,
-        "from_addr": params.pop("from_addr", None),
-        "to_addrs": params.pop("to_addrs", None),
-        "subject": params.pop("subject", None),
+        "filename":
+        params.pop("filename",
+                   generate_filename(config.report.filename_dt_format)),
+        "attach":
+        report.attach,
+        "from_addr":
+        params.pop("from_addr"),
+        "to_addrs":
+        params.pop("to_addrs"),
+        "subject":
+        params.pop("subject"),
     }
     with Mailer(**params) as mailer:
         mailer.send_message(message=report.report, **to_send)
@@ -194,7 +210,8 @@ def _report_mailer_handler(*, report: Report, **params):
 
 def mailer_reporter(
     *,
-    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
+    exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException],
+                                                          ...]]] = None,
     header: Optional[str] = None,
     as_attached: bool = False,
     **params,
@@ -243,7 +260,9 @@ def mailer_reporter(
                     header=header,
                     as_attached=as_attached,
                 )
-                await run_in_threadpool(_report_mailer_handler, report=report, **params)
+                await run_in_threadpool(_report_mailer_handler,
+                                        report=report,
+                                        **params)
                 raise exc
 
         def wrapper(*args, **kwargs):
