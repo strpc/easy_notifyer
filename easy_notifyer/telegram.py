@@ -7,7 +7,6 @@ from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 from urllib.error import HTTPError
 
 from easy_notifyer.clients import AsyncRequests, Requests
-from easy_notifyer.exceptions import ConfigError
 from easy_notifyer.utils import run_in_threadpool
 
 
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class ITelegram(ABC):
     @abstractmethod
-    def send_message(self, msg: str, **kwargs) -> Optional[bool]:
+    def send_message(self, msg: str, **kwargs):
         ...
 
     @abstractmethod
@@ -27,7 +26,7 @@ class ITelegram(ABC):
         msg: Optional[str] = None,
         filename: Optional[str] = None,
         **kwargs,
-    ) -> Optional[bool]:
+    ):
         ...
 
 
@@ -49,7 +48,7 @@ class TelegramBase:
         variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         """
         self._token = token
-        self._chat_ids = [chat_id] if isinstance(chat_id, int) else chat_id
+        self._chat_ids = [chat_id] if isinstance(chat_id, (int, str)) else chat_id
 
         api_url = api_url or "https://api.telegram.org"
         api_base_url = api_url[:-1] if api_url.endswith("/") else api_url
@@ -132,13 +131,13 @@ class TelegramAsync(ITelegram, TelegramBase):
                 files=files,
             )
         except HTTPError as error:
-            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
+            logger.exception("Error. %s", error)
         except Exception:
-            logger.error("Send message to telegram error. Response: %s")
+            logger.error("Send message to telegram error.")
         else:
             return response
 
-    async def send_message(self, msg: str, **kwargs) -> Optional[bool]:
+    async def send_message(self, msg: str, **kwargs):
         """
         Send message.
         Args:
@@ -159,7 +158,6 @@ class TelegramAsync(ITelegram, TelegramBase):
             if kwargs.get("disable_notification") is not None:
                 body["disable_notification"] = True
             await self._send_post(method_api=method_api, body=body)
-        return True
 
     async def send_attach(
         self,
@@ -168,7 +166,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         msg: Optional[str] = None,
         filename: Optional[str] = None,
         **kwargs,
-    ) -> Optional[bool]:
+    ):
         """Send file.
 
         Args:
@@ -193,7 +191,6 @@ class TelegramAsync(ITelegram, TelegramBase):
         for chat_id in self._chat_ids:
             params["chat_id"] = chat_id
             await self._send_post(method_api=method_api, params=params, files=files)
-        return True
 
 
 class Telegram(ITelegram, TelegramBase):
@@ -247,13 +244,13 @@ class Telegram(ITelegram, TelegramBase):
                 files=files,
             )
         except HTTPError as error:
-            raise ConfigError(token=self._token, chat_id=self._chat_ids, error=error) from error
+            logger.exception("Error. %s", error)
         except Exception:
             logger.error("Send message to telegram error.")
         else:
             return response
 
-    def send_message(self, msg: str, **kwargs) -> True:
+    def send_message(self, msg: str, **kwargs):
         """
         Send message.
 
@@ -275,7 +272,6 @@ class Telegram(ITelegram, TelegramBase):
             if kwargs.get("disable_notification") is not None:
                 body["disable_notification"] = True
             self._send_post(method_api=method_api, body=body)
-        return True
 
     def send_attach(
         self,
@@ -284,7 +280,7 @@ class Telegram(ITelegram, TelegramBase):
         msg: Optional[str] = None,
         filename: Optional[str] = None,
         **kwargs,
-    ) -> Optional[bool]:
+    ):
         """
         Send file.
         Args:
@@ -308,4 +304,3 @@ class Telegram(ITelegram, TelegramBase):
         for chat_id in self._chat_ids:
             params["chat_id"] = chat_id
             self._send_post(method_api=method_api, params=params, files=files)
-        return True
