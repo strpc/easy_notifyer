@@ -5,9 +5,6 @@ from email.mime.text import MIMEText
 from smtplib import SMTP, SMTP_SSL
 from typing import BinaryIO, List, Optional, Union
 
-from easy_notifyer.env import Env
-from easy_notifyer.exceptions import ConfigError
-
 
 class Mailer:
     """Object for send mail"""
@@ -15,11 +12,11 @@ class Mailer:
     def __init__(
         self,
         *,
-        host: Optional[str] = None,
-        port: Optional[int] = None,
-        login: Optional[str] = None,
-        password: Optional[str] = None,
-        ssl: Optional[bool] = None,
+        host: str,
+        port: int,
+        login: str,
+        password: str,
+        ssl: bool = False,
     ):
         """
         Args:
@@ -34,16 +31,12 @@ class Mailer:
             ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
                 EASY_NOTIFYER_MAILER_SSL
         """
-        env = Env()
-        self._host = host or env.EASY_NOTIFYER_MAILER_HOST
-        self._port = port or env.EASY_NOTIFYER_MAILER_PORT
-        self._login = login or env.EASY_NOTIFYER_MAILER_LOGIN
-        self._password = password or env.EASY_NOTIFYER_MAILER_PASSWORD
-        self._ssl = ssl or env.EASY_NOTIFYER_MAILER_SSL
+        self._host = host
+        self._port = port
+        self._login = login
+        self._password = password
+        self._ssl = ssl
         self._connection: Optional[SMTP_SSL, SMTP] = None
-
-        if not all([self._host, self._port]):
-            raise ConfigError(host=self._host, port=self._port)
 
     def __enter__(self):
         self.connect()
@@ -75,9 +68,9 @@ class Mailer:
         from_addr: str,
         to_addrs: List[str],
         text: str,
-        subject: Optional[str] = None,
-        attach: Optional[Union[bytes, str, BinaryIO]] = None,
-        filename: Optional[str] = None,
+        subject: str,
+        attach: Union[bytes, str, BinaryIO],
+        filename: str,
     ) -> MIMEMultipart:
         """
         Formatting message for send.
@@ -109,8 +102,8 @@ class Mailer:
         self,
         *,
         message: Optional[str] = None,
-        from_addr: Optional[str] = None,
-        to_addrs: Optional[Union[str, List[str]]] = None,
+        from_addr: str,
+        to_addrs: Union[str, List[str]],
         subject: Optional[str] = None,
         attach: Optional[Union[bytes, str, BinaryIO]] = None,
         filename: Optional[str] = None,
@@ -127,13 +120,6 @@ class Mailer:
             attach(bytes, str, tuple, optional): file to send.
             filename(str, optional): filename for attached file.
         """
-        from_addr = from_addr or Env().EASY_NOTIFYER_MAILER_FROM
-        to_addrs = to_addrs or Env().EASY_NOTIFYER_MAILER_TO
-        if from_addr is None or to_addrs is None:
-            raise EnvironmentError(
-                f"from_addr or to_addrs is uncorrect. from_addr={from_addr}" f"to_addrts={to_addrs}"
-            )
-
         to_addrs = [mail.strip() for mail in to_addrs.split(",")]
         msg = self._format_message(
             from_addr=from_addr,
