@@ -3,8 +3,6 @@ from datetime import datetime
 from socket import gethostname
 from typing import Optional
 
-from easy_notifyer.env import Env
-
 
 class Report:
     """Object for create report"""
@@ -12,16 +10,19 @@ class Report:
     def __init__(
         self,
         tback: str,
-        func_name: Optional[str] = None,
-        header: Optional[str] = None,
-        as_attached: bool = False,
+        func_name: Optional[str],
+        header: Optional[str],
+        as_attached: bool,
+        service_name: Optional[str],
+        datetime_format: Optional[str],
     ):
         self._tback = tback
         self._func_name = func_name
         self._header = header
         self._host_name = gethostname()
-        self._service_name = Env().EASY_NOTIFYER_SERVICE_NAME
+        self._service_name = service_name
         self._as_attached = as_attached
+        self._datetime_format = datetime_format
         self.report = None
         self.attach = None
         if self._as_attached is True:
@@ -35,7 +36,7 @@ class Report:
         report = [
             "Your program has crashed ☠️",
             "Machine name: %s" % self._host_name,
-            "Crash date: %s" % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
+            "Crash date: %s" % crash_time.strftime(self._datetime_format),
             "Traceback:",
             "%s" % self._tback,
         ]
@@ -53,7 +54,7 @@ class Report:
         report = [
             "Your program has crashed ☠️",
             "Machine name: %s" % self._host_name,
-            "Crash date: %s" % crash_time.strftime(Env().EASY_NOTIFYER_DATE_FORMAT),
+            "Crash date: %s" % crash_time.strftime(self._datetime_format),
         ]
         if self._header is not None:
             report.insert(0, "%s" % self._header)
