@@ -7,9 +7,8 @@ from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 from urllib.error import HTTPError
 
 from easy_notifyer.clients import AsyncRequests, Requests
-from easy_notifyer.env import Env
 from easy_notifyer.exceptions import ConfigError
-from easy_notifyer.utils import get_telegram_creds, run_in_threadpool
+from easy_notifyer.utils import run_in_threadpool
 
 
 logger = logging.getLogger(__name__)
@@ -35,14 +34,12 @@ class ITelegram(ABC):
 class TelegramBase:
     """Base class of telegram"""
 
-    API_BASE_URL = Env().EASY_NOTIFYER_TELEGRAM_API_URL
-    API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith("/") else API_BASE_URL
-
     def __init__(
         self,
         *,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[int, List[int]]] = None,
+        token: str,
+        chat_id: Union[int, List[int]],
+        api_url: Optional[str] = None,
     ):
         """
         Args:
@@ -51,11 +48,12 @@ class TelegramBase:
             chat_id(int, list, optional): Chat ids for send message. Can be use from environment
         variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         """
-        if token is None or chat_id is None:
-            token, chat_id = get_telegram_creds()
         self._token = token
         self._chat_ids = [chat_id] if isinstance(chat_id, int) else chat_id
-        self._base_api_url = f"{self.API_BASE_URL}/bot{self._token}/"
+
+        api_url = api_url or "https://api.telegram.org"
+        api_base_url = api_url[:-1] if api_url.endswith("/") else api_url
+        self._base_api_url = f"{api_base_url}/bot{self._token}/"
 
     @staticmethod
     def _prepare_attach(
@@ -92,6 +90,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         *,
         token: Optional[str] = None,
         chat_id: Optional[Union[int, List[int]]] = None,
+        api_url: Optional[str] = None,
     ):
         """
         Args:
@@ -100,7 +99,7 @@ class TelegramAsync(ITelegram, TelegramBase):
             chat_id(int, list, optional): Chat ids for send message. Can be use from environment
         variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         """
-        super().__init__(token=token, chat_id=chat_id)
+        super().__init__(token=token, chat_id=chat_id, api_url=api_url)
         self._client = AsyncRequests()
 
     async def _send_post(
@@ -144,7 +143,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         Send message.
         Args:
             msg(str): text of message.
-            **kwargs:
+            kwargs:
                 disable_notification(bool): True to disable notification of message.
                 disable_web_page_preview(bool): True to disable web preview for links.
         """
@@ -170,15 +169,17 @@ class TelegramAsync(ITelegram, TelegramBase):
         filename: Optional[str] = None,
         **kwargs,
     ) -> Optional[bool]:
-        """
-        Send file.
+        """Send file.
+
         Args:
             attach (bytes, str, tuple): file to send. if tuple, then
             ('filename.txt', b'text of file').
+
             msg (str, optional): text of message.
             filename(str, optional): filename if attach is string or bytes.
-            **kwargs:
-                disable_notification(bool): True to disable notification of message.
+
+        Keyword Args:
+            disable_notification(bool): True to disable notification of message.
         """
         method_api = "sendDocument"
         files = await run_in_threadpool(self._prepare_attach, attach=attach, filename=filename)
@@ -203,6 +204,7 @@ class Telegram(ITelegram, TelegramBase):
         *,
         token: Optional[str] = None,
         chat_id: Optional[Union[int, List[int]]] = None,
+        api_url: Optional[str] = None,
     ):
         """
         Args:
@@ -211,7 +213,7 @@ class Telegram(ITelegram, TelegramBase):
             chat_id(int, list, optional): Chat ids for send message. Can be use from environment
         variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
         """
-        super().__init__(token=token, chat_id=chat_id)
+        super().__init__(token=token, chat_id=chat_id, api_url=api_url)
         self._client = Requests()
 
     def _send_post(
@@ -225,6 +227,7 @@ class Telegram(ITelegram, TelegramBase):
     ):
         """
         Send post request.
+
         Args:
             method_api(str): method of api telegram
             headers(dict, optional): headers for of request.
@@ -253,11 +256,12 @@ class Telegram(ITelegram, TelegramBase):
     def send_message(self, msg: str, **kwargs) -> True:
         """
         Send message.
+
         Args:
             msg(str): text of message.
-            **kwargs:
-                disable_notification(bool): True to disable notification of message.
-                disable_web_page_preview(bool): True to disable web preview for links.
+        Keyword Args:
+            disable_notification(bool): True to disable notification of message.
+            disable_web_page_preview(bool): True to disable web preview for links.
         """
         method_api = "sendMessage"
 
@@ -285,11 +289,12 @@ class Telegram(ITelegram, TelegramBase):
         Send file.
         Args:
             attach (bytes, str, tuple): file to send. if tuple, then
-            ('filename.txt', b'text of file').
+                ('filename.txt', b'text of file').
+
             msg (str, optional): text of message.
             filename(str, optional): filename if attach is string or bytes.
-            **kwargs:
-                disable_notification(bool): True to disable notification of message.
+        Keyword Args:
+            disable_notification(bool): True to disable notification of message.
         """
         method_api = "sendDocument"
         files = self._prepare_attach(attach=attach, filename=filename)
