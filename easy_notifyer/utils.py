@@ -11,6 +11,9 @@ except ImportError:
     contextvars = None
 
 
+FILENAME_DT_FORMAT = "%Y-%m-%d %H_%M_%S"
+
+
 class MultiPartForm:
     """Creating body of request"""
 
@@ -66,7 +69,7 @@ class MultiPartForm:
         return b"\r\n".join(body)
 
 
-def generate_filename(date_fmt: str) -> str:
+def generate_filename(date_fmt: Optional[str] = None) -> str:
     """
     Generate of filename for sending report as a file.
     Args:
@@ -76,6 +79,7 @@ def generate_filename(date_fmt: str) -> str:
     Returns:
         string of filename.
     """
+    date_fmt = date_fmt or FILENAME_DT_FORMAT
     return f"{datetime.now().replace(microsecond=0).strftime(date_fmt)}.txt"
 
 
