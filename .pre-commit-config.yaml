@@ -21,15 +21,14 @@ repos:
             "--exclude=*migrations*",
         ]
 
-  - repo: local
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
     hooks:
-      - id: yapf
-        name: Main linter
-        entry: python -m yapf
-        args: [ '--parallel', '--recursive', '--diff']
-        language: system
-        types: [ python ]
-
+      - id: black
+        language_version: python3
+        args: [
+                "--line-length=100",
+        ]
 
 #  - repo: https://github.com/PyCQA/pylint
 #    rev: pylint-2.6.0
