@@ -3,7 +3,7 @@ import functools
 import traceback
 from typing import Optional, Tuple, Type, Union
 
-from easy_notifyer.mailer import Mailer
+from easy_notifyer.clients.mailer import Mailer
 from easy_notifyer.report import Report
 from easy_notifyer.utils import generate_filename, run_in_threadpool
 
