@@ -6,7 +6,7 @@ from io import BytesIO
 from typing import BinaryIO, Dict, List, Optional, Tuple, Union
 from urllib.error import HTTPError
 
-from easy_notifyer.clients import AsyncRequests, Requests
+from easy_notifyer.clients.requests import AsyncRequests, Requests, Response
 from easy_notifyer.utils import run_in_threadpool
 
 
@@ -15,7 +15,12 @@ logger = logging.getLogger(__name__)
 
 class ITelegram(ABC):
     @abstractmethod
-    def send_message(self, msg: str, **kwargs):
+    def send_message(
+        self,
+        msg: str,
+        disable_notification: bool = False,
+        disable_web_page_preview: bool = False,
+    ) -> None:
         ...
 
     @abstractmethod
@@ -25,8 +30,8 @@ class ITelegram(ABC):
         *,
         msg: Optional[str] = None,
         filename: Optional[str] = None,
-        **kwargs,
-    ):
+        disable_notification: bool = False,
+    ) -> None:
         ...
 
 
@@ -39,13 +44,12 @@ class TelegramBase:
         token: str,
         chat_id: Union[int, List[int]],
         api_url: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. Can be use from environment variable
-            `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            token(str, optional): Telegram bot token. To receive:
+        https://core.telegram.org/bots#6-botfather.
+            chat_id(int, list, optional): Chat ids for send message.
         """
         self._token = token
         self._chat_ids = [chat_id] if isinstance(chat_id, (int, str)) else chat_id
@@ -90,13 +94,13 @@ class TelegramAsync(ITelegram, TelegramBase):
         token: Optional[str] = None,
         chat_id: Optional[Union[int, List[int]]] = None,
         api_url: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. Can be use from environment variable
-            `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            token(str, optional): Telegram bot token. To receive:
+        https://core.telegram.org/bots#6-botfather.
+            chat_id(int, list, optional): Chat ids for send message.
+            api_url (str, optional): telegram api url.
         """
         super().__init__(token=token, chat_id=chat_id, api_url=api_url)
         self._client = AsyncRequests()
@@ -109,7 +113,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         params: Optional[Dict] = None,
         body: Optional[Dict] = None,
         files: Optional[Dict] = None,
-    ):
+    ) -> Optional[Response]:
         """
         Send async post request.
         Args:
@@ -132,19 +136,23 @@ class TelegramAsync(ITelegram, TelegramBase):
             )
         except HTTPError as error:
             logger.exception("Error. %s", error)
-        except Exception:
+        except Exception:  # noqa
             logger.error("Send message to telegram error.")
         else:
             return response
 
-    async def send_message(self, msg: str, **kwargs):
+    async def send_message(
+        self,
+        msg: str,
+        disable_notification: bool = False,
+        disable_web_page_preview: bool = False,
+    ) -> None:
         """
         Send message.
         Args:
             msg(str): text of message.
-            kwargs:
-                disable_notification(bool): True to disable notification of message.
-                disable_web_page_preview(bool): True to disable web preview for links.
+            disable_notification(bool): True to disable notification of message.
+            disable_web_page_preview(bool): True to disable web preview for links.
         """
         method_api = "sendMessage"
 
@@ -153,9 +161,10 @@ class TelegramAsync(ITelegram, TelegramBase):
                 "chat_id": chat_id,
                 "text": msg,
             }
-            if kwargs.get("disable_web_page_preview") is not None:
+
+            if disable_web_page_preview is True:
                 body["disable_web_page_preview"] = True
-            if kwargs.get("disable_notification") is not None:
+            if disable_notification is True:
                 body["disable_notification"] = True
             await self._send_post(method_api=method_api, body=body)
 
@@ -165,8 +174,8 @@ class TelegramAsync(ITelegram, TelegramBase):
         *,
         msg: Optional[str] = None,
         filename: Optional[str] = None,
-        **kwargs,
-    ):
+        disable_notification: bool = False,
+    ) -> None:
         """Send file.
 
         Args:
@@ -176,7 +185,6 @@ class TelegramAsync(ITelegram, TelegramBase):
             msg (str, optional): text of message.
             filename(str, optional): filename if attach is string or bytes.
 
-        Keyword Args:
             disable_notification(bool): True to disable notification of message.
         """
         method_api = "sendDocument"
@@ -185,7 +193,7 @@ class TelegramAsync(ITelegram, TelegramBase):
         params = {}
         if msg is not None:
             params["caption"] = msg
-        if kwargs.get("disable_notification") is not None:
+        if disable_notification is True:
             params["disable_notification"] = True
 
         for chat_id in self._chat_ids:
@@ -202,13 +210,13 @@ class Telegram(ITelegram, TelegramBase):
         token: Optional[str] = None,
         chat_id: Optional[Union[int, List[int]]] = None,
         api_url: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. Can be use from environment variable
-            `EASY_NOTIFYER_TELEGRAM_TOKEN`. To receive: https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message. Can be use from environment
-        variable `EASY_NOTIFYER_TELEGRAM_CHAT_ID`.
+            token(str, optional): Telegram bot token. To receive:
+        https://core.telegram.org/bots#6-botfather.
+            chat_id(int, list, optional): Chat ids for send message.
+            api_url (str, optional): telegram api url.
         """
         super().__init__(token=token, chat_id=chat_id, api_url=api_url)
         self._client = Requests()
@@ -221,7 +229,7 @@ class Telegram(ITelegram, TelegramBase):
         params: Optional[Dict] = None,
         body: Optional[Dict] = None,
         files: Optional[Dict] = None,
-    ):
+    ) -> Optional[Response]:
         """
         Send post request.
 
@@ -245,18 +253,21 @@ class Telegram(ITelegram, TelegramBase):
             )
         except HTTPError as error:
             logger.exception("Error. %s", error)
-        except Exception:
+        except Exception:  # noqa
             logger.error("Send message to telegram error.")
         else:
             return response
 
-    def send_message(self, msg: str, **kwargs):
-        """
-        Send message.
+    def send_message(
+        self,
+        msg: str,
+        disable_notification: bool = False,
+        disable_web_page_preview: bool = False,
+    ) -> None:
+        """Send message.
 
         Args:
             msg(str): text of message.
-        Keyword Args:
             disable_notification(bool): True to disable notification of message.
             disable_web_page_preview(bool): True to disable web preview for links.
         """
@@ -267,9 +278,9 @@ class Telegram(ITelegram, TelegramBase):
                 "chat_id": chat_id,
                 "text": msg,
             }
-            if kwargs.get("disable_web_page_preview") is not None:
+            if disable_web_page_preview is True:
                 body["disable_web_page_preview"] = True
-            if kwargs.get("disable_notification") is not None:
+            if disable_notification is True:
                 body["disable_notification"] = True
             self._send_post(method_api=method_api, body=body)
 
@@ -279,17 +290,17 @@ class Telegram(ITelegram, TelegramBase):
         *,
         msg: Optional[str] = None,
         filename: Optional[str] = None,
-        **kwargs,
-    ):
-        """
-        Send file.
+        disable_notification: bool = False,
+    ) -> None:
+        """Send file.
+
         Args:
             attach (bytes, str, tuple): file to send. if tuple, then
                 ('filename.txt', b'text of file').
 
             msg (str, optional): text of message.
             filename(str, optional): filename if attach is string or bytes.
-        Keyword Args:
+
             disable_notification(bool): True to disable notification of message.
         """
         method_api = "sendDocument"
@@ -298,7 +309,7 @@ class Telegram(ITelegram, TelegramBase):
         params = {}
         if msg is not None:
             params["caption"] = msg
-        if kwargs.get("disable_notification") is not None:
+        if disable_notification is True:
             params["disable_notification"] = True
 
         for chat_id in self._chat_ids:
