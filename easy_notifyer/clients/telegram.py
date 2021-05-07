@@ -42,14 +42,13 @@ class TelegramBase:
         self,
         *,
         token: str,
-        chat_id: Union[int, List[int]],
+        chat_id: Union[List[int], int, List[str], str],
         api_url: Optional[str] = None,
     ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. To receive:
-        https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message.
+            token(str): Telegram bot token. To receive: https://core.telegram.org/bots#6-botfather.
+            chat_id(int, str, list): Chat ids for send message.
         """
         self._token = token
         self._chat_ids = [chat_id] if isinstance(chat_id, (int, str)) else chat_id
@@ -91,15 +90,14 @@ class TelegramAsync(ITelegram, TelegramBase):
     def __init__(
         self,
         *,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[int, List[int]]] = None,
-        api_url: Optional[str] = None,
+        token: str,
+        chat_id: Union[List[int], int, List[str], str],
+        api_url: Optional[str],
     ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. To receive:
-        https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message.
+            token(str): Telegram bot token. To receive: https://core.telegram.org/bots#6-botfather.
+            chat_id(int, str, list): Chat ids for send message.
             api_url (str, optional): telegram api url.
         """
         super().__init__(token=token, chat_id=chat_id, api_url=api_url)
@@ -207,15 +205,14 @@ class Telegram(ITelegram, TelegramBase):
     def __init__(
         self,
         *,
-        token: Optional[str] = None,
-        chat_id: Optional[Union[int, List[int]]] = None,
+        token: str,
+        chat_id: Union[List[int], int, List[str], str],
         api_url: Optional[str] = None,
     ) -> None:
         """
         Args:
-            token(str, optional): Telegram bot token. To receive:
-        https://core.telegram.org/bots#6-botfather.
-            chat_id(int, list, optional): Chat ids for send message.
+            token(str): Telegram bot token. To receive: https://core.telegram.org/bots#6-botfather.
+            chat_id(int, str, list): Chat ids for send message.
             api_url (str, optional): telegram api url.
         """
         super().__init__(token=token, chat_id=chat_id, api_url=api_url)
