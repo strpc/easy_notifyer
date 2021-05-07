@@ -6,7 +6,7 @@ from uuid import uuid4
 
 
 try:
-    import contextvars  # Python 3.7+
+    import contextvars  # noqa 401
 except ImportError:
     contextvars = None
 
@@ -73,9 +73,7 @@ def generate_filename(date_fmt: Optional[str] = None) -> str:
     """
     Generate of filename for sending report as a file.
     Args:
-        filename(str, optional): filename, if exists. Else - "{datetime}.txt". Format of datetime
-            can be set in environment variable `EASY_NOTIFYER_FILENAME_DT_FORMAT`.
-            Default - "%Y-%m-%d %H_%M_%S"
+        date_fmt (str, optional): Format of datetime.
     Returns:
         string of filename.
     """
