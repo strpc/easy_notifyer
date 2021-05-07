@@ -3,8 +3,8 @@ from typing import Dict
 import pytest
 from pytest_mock import MockerFixture
 
-from easy_notifyer import clients
-from easy_notifyer.clients import Requests as Requests
+from easy_notifyer import requests
+from easy_notifyer.requests import Requests as Requests
 
 
 pytestmark = [
@@ -31,8 +31,8 @@ def test_add_params(
     result: str,
 ):
     mocker.patch.object(client, "_client")
-    mocker.patch.object(clients, "request")
-    mocker.patch.object(clients, "HTTPResponse")
+    mocker.patch.object(requests, "request")
+    mocker.patch.object(requests, "HTTPResponse")
     client.post(
         url=url,
         params=params,
