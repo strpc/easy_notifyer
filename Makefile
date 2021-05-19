@@ -1,5 +1,6 @@
 PACKAGE_NAME=easy_notifyer
 PACKAGE_MODULES=./$(PACKAGE_NAME) ./tests
+DOCS_DIR=docs
 
 build:
 	python3 setup.py sdist bdist_wheel
@@ -49,5 +50,11 @@ isort:
 test:
 	pytest tests/
 
-#sphinx:
-#     sphinx-apidoc -f -o ./docs/ $(PACKAGE_NAME)
+sphinx_rst:
+	sphinx-apidoc -f -o ./$(DOCS_DIR)/source $(PACKAGE_NAME)
+
+clear_docs:
+	@make --directory=./$(DOCS_DIR)/ clear
+
+docs: clear_docs
+	make --directory=./$(DOCS_DIR)/ html
