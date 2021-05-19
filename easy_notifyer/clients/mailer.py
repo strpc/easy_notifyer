@@ -20,16 +20,11 @@ class Mailer:
     ):
         """
         Args:
-            host(str, optional): = post of smtp server. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_HOST
-            port(int, optional): = port of smtp server. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_PORT
-            login(str, optional): = login for auth in smtp server. Can be use from environment
-                variable -  EASY_NOTIFYER_MAILER_LOGIN
-            password(str, optional): password for auth in smtp server. Can be use from environment
-                variable - EASY_NOTIFYER_MAILER_PASSWORD
-            ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_SSL
+            host(str, optional): = post of smtp server.
+            port(int, optional): = port of smtp server.
+            login(str, optional): = login for auth in smtp server.
+            password(str, optional): password for auth in smtp server.
+            ssl(bool, optional): use SSL connection for smtp.
         """
         self._host = host
         self._port = port
@@ -72,16 +67,17 @@ class Mailer:
         attach: Union[bytes, str, BinaryIO],
         filename: str,
     ) -> MIMEMultipart:
-        """
-        Formatting message for send.
+        """Formatting message for send.
+
         Args:
-            from_addr(str): the address sending this mail.
-            to_addrs(list(str)): addresses to send this mail to.
-            subject(str, optional): subject of the mail.
-            attach(bytes, str, tuple, optional): file to send.
-            filename(str, optional): filename for attached file.
+            from_addr (str): the address sending this mail.
+            to_addrs (list(str)): addresses to send this mail to.
+            subject (str, optional): subject of the mail.
+            attach (bytes, str, tuple, optional): file to send.
+            filename (str, optional): filename for attached file.
+
         Returns:
-            MIMEMultipart of message with body, from, to, attach and subject.
+            MIMEMultipart: multipart of message with body, from, to, attach and subject.
         """
         message = MIMEMultipart()
         message["From"] = from_addr
@@ -108,14 +104,12 @@ class Mailer:
         attach: Optional[Union[bytes, str, BinaryIO]] = None,
         filename: Optional[str] = None,
     ):
-        """
-        Send email.
+        """Send email.
+
         Args:
             message(str, optional): Text body of message.
-            from_addr(str, optional): the address sending this mail. Can be use from environment
-                variable - EASY_NOTIFYER_MAILER_FROM
-            to_addrs(str, list(str), optional): addresses to send this mail to. Can be use from
-                environment variable - EASY_NOTIFYER_MAILER_TO
+            from_addr(str, optional): the address sending this mail.
+            to_addrs(str, list(str), optional): addresses to send this mail to.
             subject(str, optional): subject of the mail.
             attach(bytes, str, tuple, optional): file to send.
             filename(str, optional): filename for attached file.

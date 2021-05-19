@@ -27,32 +27,25 @@ def mailer_reporter(
     as_attached: bool = False,
     **params,
 ):
-    """
-    Handler errors for sending report on email.
+    """Handler errors for sending report on email.
+
     Args:
         exceptions(exception, tuple(exception), optional): Exceptions for handle.
             Two and more - in tuple. Default - Exception.
         header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
         as_attached(bool, optional): make report for sending as a file. Default - False.
+
         **params:
-            host(str, optional): = post of smtp server. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_HOST
-            port(int, optional): = port of smtp server. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_PORT
-            login(str, optional): = login for auth in smtp server. Can be use from environment
-                variable -  EASY_NOTIFYER_MAILER_LOGIN
-            password(str, optional): password for auth in smtp server. Can be use from environment
-                variable - EASY_NOTIFYER_MAILER_PASSWORD
-            ssl(bool, optional): use SSL connection for smtp. Can be use from environment variable -
-                EASY_NOTIFYER_MAILER_SSL
-            from_addr(str, optional): the address sending this mail. Can be use from environment
-                variable - EASY_NOTIFYER_MAILER_FROM
-            to_addrs(str, list(str), optional): addresses to send this mail to. Can be use from
-                environment variable - EASY_NOTIFYER_MAILER_TO
+            host(str, optional): = post of smtp server.
+            port(int, optional): = port of smtp server.
+            login(str, optional): = login for auth in smtp server.
+            password(str, optional): password for auth in smtp server.
+            ssl(bool, optional): use SSL connection for smtp.
+            from_addr(str, optional): the address sending this mail.
+            to_addrs(str, list(str), optional): addresses to send this mail to.
             subject(str, optional): subject of the mail.
             filename(str, optional): filename for sending report as file.
-                Default: datetime %Y-%m-%d %H_%M_%S.txt. Format may be set in environment variable
-                EASY_NOTIFYER_FILENAME_DT_FORMAT
+            Default: datetime %Y-%m-%d %H_%M_%S.txt.
     """
     exceptions = exceptions or Exception
 
