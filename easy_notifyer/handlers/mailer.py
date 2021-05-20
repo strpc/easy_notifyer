@@ -47,6 +47,7 @@ def mailer_reporter(
     from_addr: str,
     to_addrs: Union[str, List[str]],
     ssl: bool = False,
+    service_name: Optional[str] = None,
 ) -> Callable:
     """Handler errors for sending report on email.
 
@@ -58,9 +59,7 @@ def mailer_reporter(
         from_addr(str, optional): the address sending this mail.
         to_addrs(str, list(str), optional): addresses to send this mail to.
         ssl(bool, optional): use SSL connection for smtp.
-
-    Returns:
-
+        service_name (optional): Service name.
     """
 
     def mailer_wrapper(
@@ -68,6 +67,7 @@ def mailer_reporter(
         exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
+        datetime_format: str = "%Y-%m-%d %H:%M:%S",
         subject: Optional[str] = None,
         filename: Optional[str] = None,
     ):
@@ -79,6 +79,7 @@ def mailer_reporter(
             header (str, optional): first line in report message. Default -
             "Your program has crashed ☠️"
             as_attached (bool, optional): make report for sending as a file. Default - False.
+            datetime_format (str, optional): format datetime for report.
             subject(str, optional): subject of the mail.
             filename(str, optional): filename for sending report as file.
                 Default: datetime %Y-%m-%d %H_%M_%S.txt.
@@ -110,6 +111,8 @@ def mailer_reporter(
                         func_name=func_name,
                         header=header,
                         as_attached=as_attached,
+                        service_name=service_name,
+                        datetime_format=datetime_format,
                     )
                     await run_in_threadpool(
                         _report_mailer_handler,
@@ -128,6 +131,8 @@ def mailer_reporter(
                         func_name=func_name,
                         header=header,
                         as_attached=as_attached,
+                        service_name=service_name,
+                        datetime_format=datetime_format,
                     )
                     _report_mailer_handler(report=report, **params_for_send)
                     raise exc
@@ -147,6 +152,8 @@ def _report_maker(
     func_name: Optional[str] = None,
     header: Optional[str] = None,
     as_attached: bool = False,
+    service_name: Optional[str],
+    datetime_format: Optional[str],
 ) -> Report:
     """
     Make report from
@@ -159,4 +166,4 @@ def _report_maker(
     Returns:
         isinstance of Report obj.
     """
-    return Report(tback, func_name, header, as_attached)
+    return Report(tback, func_name, header, as_attached, service_name, datetime_format)
