@@ -1,6 +1,6 @@
 PACKAGE_NAME=easy_notifyer
 PACKAGE_MODULES=./$(PACKAGE_NAME) ./tests
-DOCS_DIR=docs
+DOCS_DIR=docs_build
 
 build:
 	python3 setup.py sdist bdist_wheel
