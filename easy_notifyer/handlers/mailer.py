@@ -30,10 +30,11 @@ def mailer_reporter(
     """Handler errors for sending report on email.
 
     Args:
-        exceptions(exception, tuple(exception), optional): Exceptions for handle.
+        exceptions (exception, tuple(exception), optional): Exceptions for handle.
             Two and more - in tuple. Default - Exception.
-        header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
-        as_attached(bool, optional): make report for sending as a file. Default - False.
+        header (str, optional): first line in report message. Default -
+        "Your program has crashed ☠️"
+        as_attached (bool, optional): make report for sending as a file. Default - False.
 
         **params:
             host(str, optional): = post of smtp server.

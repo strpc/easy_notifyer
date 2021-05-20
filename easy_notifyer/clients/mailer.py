@@ -20,11 +20,11 @@ class Mailer:
     ):
         """
         Args:
-            host(str, optional): = post of smtp server.
-            port(int, optional): = port of smtp server.
-            login(str, optional): = login for auth in smtp server.
-            password(str, optional): password for auth in smtp server.
-            ssl(bool, optional): use SSL connection for smtp.
+            host (str, optional): = post of smtp server.
+            port (int, optional): = port of smtp server.
+            login (str, optional): = login for auth in smtp server.
+            password (str, optional): password for auth in smtp server.
+            ssl (bool, optional): use SSL connection for smtp.
         """
         self._host = host
         self._port = port
@@ -107,12 +107,12 @@ class Mailer:
         """Send email.
 
         Args:
-            message(str, optional): Text body of message.
-            from_addr(str, optional): the address sending this mail.
-            to_addrs(str, list(str), optional): addresses to send this mail to.
-            subject(str, optional): subject of the mail.
-            attach(bytes, str, tuple, optional): file to send.
-            filename(str, optional): filename for attached file.
+            message (str, optional): Text body of message.
+            from_addr (str, optional): the address sending this mail.
+            to_addrs (str, list(str), optional): addresses to send this mail to.
+            subject (str, optional): subject of the mail.
+            attach (bytes, str, tuple, optional): file to send.
+            filename (str, optional): filename for attached file.
         """
         to_addrs = [mail.strip() for mail in to_addrs.split(",")]
         msg = self._format_message(

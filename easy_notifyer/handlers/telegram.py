@@ -2,7 +2,7 @@ import asyncio
 import functools
 import logging
 import traceback
-from typing import List, Optional, Tuple, Type, Union
+from typing import Callable, List, Optional, Tuple, Type, Union
 
 from easy_notifyer.clients.telegram import Telegram, TelegramAsync
 from easy_notifyer.report import Report
@@ -24,10 +24,12 @@ def _report_maker(
     """Make report from.
 
     Args:
-        tback(str): traceback for report.
-        func_name(str, optional): name of function when raised error.
-        header(str, optional): first line in report message. Default - "Your program has crashed ☠️"
-        as_attached(bool, optional): make report for sending as a file. Default - False.
+        tback (str): traceback for report.
+        func_name (str, optional): name of function when raised error.
+        header (str, optional): first line in report message. Default -
+        "Your program has crashed ☠️"
+        as_attached (bool, optional): make report for sending as a file. Default - False.
+
     Returns:
         isinstance of Report obj.
     """
@@ -47,12 +49,12 @@ def _report_telegram_handler(
     """Send report.
 
     Args:
-        report(Report): instance of ready to send report.
-        token(str): Telegram bot token.
-        chat_id(int, list): Chat ids for send message.
-        filename(str, optional): make report for sending as a file.
-        disable_notification(bool): True to disable notification of message.
-        disable_web_page_preview(bool): True to disable web preview for links. Not worked for
+        report (Report): instance of ready to send report.
+        token (str): Telegram bot token.
+        chat_id (int, list): Chat ids for send message.
+        filename (str, optional): make report for sending as a file.
+        disable_notification (bool): True to disable notification of message.
+        disable_web_page_preview (bool): True to disable web preview for links. Not worked for
             as_attached report.
     """
     bot = Telegram(token=token, chat_id=chat_id, api_url=api_url)
@@ -85,12 +87,12 @@ async def _async_report_telegram_handler(
     """Send report.
 
     Args:
-        report(Report): instance of ready to send report.
-        token(str): Telegram bot token.
-        chat_id(int, list): Chat ids for send message.
-        filename(str, optional): make report for sending as a file.
-        disable_notification(bool): True to disable notification of message.
-        disable_web_page_preview(bool): True to disable web preview for links. Not worked for
+        report (Report): instance of ready to send report.
+        token (str): Telegram bot token.
+        chat_id (int, list): Chat ids for send message.
+        filename (str, optional): make report for sending as a file.
+        disable_notification (bool): True to disable notification of message.
+        disable_web_page_preview (bool): True to disable web preview for links. Not worked for
             as_attached report.
     """
     bot = TelegramAsync(token=token, chat_id=chat_id, api_url=api_url)
@@ -116,18 +118,15 @@ def telegram_reporter(
     chat_id: Union[List[int], int, List[str], str],
     api_url: Optional[str] = None,
     service_name: Optional[str] = None,
-):
-    """
+) -> Union[Callable]:
+    """Handler errors for sending report in telegram.
 
     Args:
-        token(str): Telegram bot token. Can be use from environment variable
+        token (str): Telegram bot token. Can be use from environment variable
         To receive: https://core.telegram.org/bots#6-botfather.
-        chat_id(int, str, list): Chat ids for send message.
-        api_url(str): #! TODO
-        service_name: #! TODO
-
-    Returns:
-
+        chat_id (int, str, list): Chat ids for send message.
+        api_url (str): Url api for telegram.
+        service_name (optional): Service name.
     """
 
     def telegram_wrapper(
@@ -139,19 +138,18 @@ def telegram_reporter(
         disable_notification: bool = False,
         disable_web_page_preview: bool = False,
     ):
-        """Handler errors for sending report in telegram.
-
+        """
         Args:
-            exceptions(exception, tuple(exception), optional): Exceptions for handle.
+            exceptions (exception, tuple(exception), optional): Exceptions for handle.
                 Two and more - in tuple. Default - Exception.
-            header(str, optional): first line in report message.
+            header (str, optional): first line in report message.
                 Default - "Your program has crashed ☠️"
-            as_attached(bool, optional): make report for sending as a file. Default - False.
-            datetime_format(str, optional): format datetime for report.
-            filename(str, optional): filename for sending report as file.
+            as_attached (bool, optional): make report for sending as a file. Default - False.
+            datetime_format (str, optional): format datetime for report.
+            filename (str, optional): filename for sending report as file.
                 Default: datetime %Y-%m-%d %H_%M_%S.txt.
-            disable_notification(bool): True to disable notification of message.
-            disable_web_page_preview(bool): True to disable web preview for links.
+            disable_notification (bool): True to disable notification of message.
+            disable_web_page_preview (bool): True to disable web preview for links.
                 Not worked for as_attached report.
         """
         if as_attached is True and disable_web_page_preview is True:
