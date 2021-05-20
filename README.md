@@ -9,6 +9,8 @@ Easy Notifyer
 
 Easy bug reporter for small projects. Zero dependencies - download and run. Asyncio support.
 
+**[Documentation](./docs/)**
+
 ----
 
 ### Install
