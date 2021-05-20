@@ -4,7 +4,7 @@ from easy_notifyer.handlers.mailer import mailer_reporter
 from easy_notifyer.handlers.telegram import telegram_reporter
 
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 
 __all__ = [
