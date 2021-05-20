@@ -138,7 +138,7 @@ def telegram_reporter(
         disable_notification: bool = False,
         disable_web_page_preview: bool = False,
     ):
-        """
+        """Handler errors for sending report in telegram.
         Args:
             exceptions (exception, tuple(exception), optional): Exceptions for handle.
                 Two and more - in tuple. Default - Exception.
