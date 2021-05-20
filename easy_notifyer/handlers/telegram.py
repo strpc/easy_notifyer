@@ -114,7 +114,7 @@ async def _async_report_telegram_handler(
 
 def telegram_reporter(
     *,
-    token: Optional[str],
+    token: str,
     chat_id: Union[List[int], int, List[str], str],
     api_url: Optional[str] = None,
     service_name: Optional[str] = None,
