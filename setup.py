@@ -50,7 +50,14 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     download_url="https://pypi.python.org/pypi/easy-notifyer",
-    packages=find_packages(include=[NAME_PACKAGE]),
+    packages=find_packages(
+        exclude=(
+            "tests",
+            "tests.*",
+            "examples.*",
+            "docs",
+        )
+    ),
     extras_require={
         "dev": EXTRAS["dev"],
         "all": list(chain.from_iterable(EXTRAS.values())),
