@@ -18,7 +18,7 @@ EXTRAS = {
         "pylint",
         "flake8",
         "isort",
-        "bumpversion",
+        "bump2version",
         "black",
     ]
 }
