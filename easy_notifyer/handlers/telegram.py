@@ -19,7 +19,7 @@ def _report_maker(
     header: Optional[str],
     as_attached: bool,
     service_name: Optional[str],
-    datetime_format: Optional[str],
+    datetime_format: str,
 ) -> Report:
     """Make report from.
 
@@ -29,6 +29,8 @@ def _report_maker(
         header (str, optional): first line in report message. Default -
         "Your program has crashed ☠️"
         as_attached (bool, optional): make report for sending as a file. Default - False.
+        service_name (optional): Service name.
+        datetime_format (str, optional): format datetime for report.
 
     Returns:
         isinstance of Report obj.
@@ -133,7 +135,7 @@ def telegram_reporter(
         exceptions: Optional[Union[Type[BaseException], Tuple[Type[BaseException], ...]]] = None,
         header: Optional[str] = None,
         as_attached: bool = False,
-        datetime_format: Optional[str] = None,
+        datetime_format: str = "%Y-%m-%d %H:%M:%S",
         filename: Optional[str] = None,
         disable_notification: bool = False,
         disable_web_page_preview: bool = False,
@@ -159,7 +161,7 @@ def telegram_reporter(
             disable_web_page_preview = False
 
         exceptions = exceptions or Exception
-        datetime_format = datetime_format or "%Y-%m-%d %H:%M:%S"
+        datetime_format = datetime_format
 
         def decorator(func):
             func_name = func.__name__
