@@ -1,16 +1,17 @@
 import asyncio
 import functools
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any, Callable, Dict, Optional
 from uuid import uuid4
-
-from easy_notifyer.env import Env
-from easy_notifyer.exceptions import ConfigError
 
 
 try:
-    import contextvars  # Python 3.7+
+    import contextvars  # noqa 401
 except ImportError:
     contextvars = None
+
+
+FILENAME_DT_FORMAT = "%Y-%m-%d %H_%M_%S"
 
 
 class MultiPartForm:
@@ -68,25 +69,16 @@ class MultiPartForm:
         return b"\r\n".join(body)
 
 
-def get_telegram_creds() -> Tuple[str, List[int]]:
+def generate_filename(date_fmt: Optional[str] = None) -> str:
     """
-    Get telegram creds from environment variable
+    Generate of filename for sending report as a file.
+    Args:
+        date_fmt (str, optional): Format of datetime.
     Returns:
-        Tuple[token(str), List[chat_id(int), ...]]
+        string of filename.
     """
-    token = Env().EASY_NOTIFYER_TELEGRAM_TOKEN
-    chat_id = Env().EASY_NOTIFYER_TELEGRAM_CHAT_ID
-
-    error = ConfigError(token=token, chat_id=chat_id)
-
-    if token is None or chat_id is None:
-        raise error
-    try:
-        chat_id = [i.strip() for i in chat_id.split(",")]
-        chat_id = [int(i) for i in chat_id if i]
-    except ValueError as exc:
-        raise error from exc
-    return token, chat_id
+    date_fmt = date_fmt or FILENAME_DT_FORMAT
+    return f"{datetime.now().replace(microsecond=0).strftime(date_fmt)}.txt"
 
 
 async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:

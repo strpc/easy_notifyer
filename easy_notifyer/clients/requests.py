@@ -1,5 +1,5 @@
 # pylint: disable=too-few-public-methods
-from http.client import HTTPResponse
+from http.client import HTTPResponse as Response
 from typing import Dict, Optional
 from urllib import request
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
@@ -33,7 +33,7 @@ class Requests(RequestsBase):
         params: Optional[Dict] = None,
         body: Optional[Dict] = None,
         files: Optional[Dict] = None,
-    ) -> HTTPResponse:
+    ) -> Response:
         """Send post request"""
         data = None
         headers = headers or {}
@@ -63,7 +63,7 @@ class AsyncRequests:
         headers: Optional[Dict] = None,
         body: Optional[Dict] = None,
         files: Optional[Dict] = None,
-    ) -> HTTPResponse:
+    ) -> Response:
         """Send async post request"""
         return await run_in_threadpool(
             self._client.post,
